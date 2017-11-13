@@ -18,4 +18,5 @@ org/bibalex/eol/scheduler/harvest/Harvest.class
 org/bibalex/eol/scheduler/harvest/TestRepository.class
 org/bibalex/eol/scheduler/resource/Resource.class
 org/bibalex/eol/scheduler/exceptions/NotFoundException.class
+org/bibalex/eol/scheduler/harvest/Tester.class
 org/bibalex/eol/scheduler/harvest/Harvest$State.class

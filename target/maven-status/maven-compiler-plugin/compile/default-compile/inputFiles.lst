@@ -2,6 +2,7 @@
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/resource/ResourceController.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/content_partner/ContentPartnerService.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/SchedulerAPI.java
+/home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/harvest/TestRepository.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/harvest/HarvestRepository.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/harvest/Harvest.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/resource/ResourcePositionComparator.java
@@ -12,4 +13,6 @@
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/resource/ResourceService.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/exceptions/NotFoundException.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/resource/Resource.java
+/home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/harvest/Test.java
 /home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/content_partner/ContentPartnerRepository.java
+/home/hduser/eol/workspace/Scheduler/src/main/java/org/bibalex/eol/scheduler/harvest/Tester.java

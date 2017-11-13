@@ -26,6 +26,6 @@ public interface ResourceRepository extends CrudRepository<Resource, Long> {
 //    public int setLastHarvestedDate(@Param("name") String name, @Param("id") Long id);
 
 
-    @Procedure(name = "harvestResource")
-    public List<Resource> x(@Param("cDate") Date inParam1);
+//    @Procedure(name = "harvestResource")
+//    public List<Resource> x(@Param("cDate") Date inParam1);
 }

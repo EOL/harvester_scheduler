@@ -19,10 +19,20 @@ import java.util.Set;
  */
 
 @Entity
+@Table(name = "Resource")
+@NamedStoredProcedureQuery(
+        name = "harvestResource_sp",
+        procedureName = "harvestResource",
+//        resultClasses = {Resource.class },
+        parameters = {
+                @StoredProcedureParameter(name = "cDate", mode = ParameterMode.IN, type = Date.class)
+        }
+)
 //@NamedStoredProcedureQuery(name = "harvestResource", procedureName = "harvestResource", resultClasses = {Resource.class },
 //        parameters = {
 //        @StoredProcedureParameter(mode = ParameterMode.IN, name = "cDate", type = Date.class)
 //})
+
 public class Resource implements Serializable{
 
     private enum Type {
@@ -72,6 +82,9 @@ public class Resource implements Serializable{
     private Set<Harvest> harvests = new HashSet<>();
 
     public  Resource(){
+    }
+
+    public  Resource(long id){
     }
 
     public Long getId() {

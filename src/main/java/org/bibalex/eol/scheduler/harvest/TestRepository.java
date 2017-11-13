@@ -13,7 +13,7 @@ import java.util.List;
  */
     public interface TestRepository extends CrudRepository<Resource, Long> {
 
-        @Procedure(name = "harvestResource")
+        @Procedure
 
         public List<Resource> inOnlyTest(@Param("cDate") Date inParam1);
 

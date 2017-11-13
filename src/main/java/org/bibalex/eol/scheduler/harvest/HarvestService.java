@@ -5,12 +5,14 @@ import org.bibalex.eol.scheduler.resource.ResourcePositionComparator;
 import org.bibalex.eol.scheduler.resource.ResourceRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import java.io.IOException;
+import java.sql.*;
 import java.util.Date;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -42,6 +44,9 @@ public class HarvestService {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
 
     @PostConstruct
     private void init() {
@@ -69,12 +74,25 @@ public class HarvestService {
 
 
             System.out.println("b4 SP");
-            List<Resource> resList = testRepository.inOnlyTest(new Date());
+//            List<Resource> resList = testRepository.inOnlyTest(new Date());
 
-//            List<Resource> resList = storedProcedure.getResultList();
-            System.out.println("aftr SP");
-            System.out.println("Size of returned resources" + resList.size());
+            StoredProcedureQuery harvestSp = entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
+            harvestSp.setParameter("cDate", new Date(), TemporalType.DATE);
 
+// Stored procedure call
+//            Resource createdBookId = (Resource) addBookNamedStoredProcedure.getSingleResult();
+
+
+            List<Resource> resList = harvestSp.getResultList();
+            System.out.println("aftr SP:" + resList.size());
+            System.out.println("aftr SP:" + resList.get(0));
+//            System.out.println("Size of returned resources" + resList.size());
+//
+            for(int i = 0; i < resList.size(); i++) {
+                System.out.println("r:" + resList.get(i));
+                Resource s = (Resource)resList.get(i);
+                System.out.println("r:" + s.toString());
+            }
             resList.forEach( r ->  {System.out.println(r.getId());resourcePriorityQueue.add(r);});
             logger.debug("Resources to be harvested:");
             System.out.println("resourcePriorityQueue size:"  +resourcePriorityQueue.size());
@@ -110,6 +128,35 @@ public class HarvestService {
 //        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
         }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 30 sec
 //    }, initialDelay , 86400000L, TimeUnit.MILLISECONDS);
+    }
+
+
+    private static void call() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+
+        CallableStatement cStmt = getDBConnection().prepareCall("{CALL harvestResource(?)}");
+        Date startDate = new Date();
+        cStmt.setDate(1, new java.sql.Date(startDate.getTime()));
+        cStmt.execute();
+        ResultSet rs1 = cStmt.getResultSet();
+
+        while (rs1.next()) {
+            System.out.println(rs1.toString());
+        }
+        rs1.close();
+
+        cStmt.close();
+
+    }
+
+    private static Connection getDBConnection() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
+
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
+
+        String ConnectionString="jdbc:mysql://172.16.0.161:3306/eol?rewriteBatchedStatements=true&useSSL=false&user=root&password=XiB6bAMgesJbmUUn";
+//        String ConnectionString="jdbc:mysql://localhost:3306/eol?rewriteBatchedStatements=true&useSSL=false&user=root&password=Root";
+        Connection conn = DriverManager.getConnection(ConnectionString);
+    return conn;
+
     }
 
     private Harvest.State getHarvestStatus(String harvestStr) {

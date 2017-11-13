@@ -9,15 +9,16 @@ import java.util.Date;
 /**
  * Created by hduser on 11/9/17.
  */
-@Entity
-@Table(name = "Resource")
 
-@NamedStoredProcedureQueries({
-        @NamedStoredProcedureQuery(name = "harvestResource", procedureName = "harvestResource", resultClasses = {Resource.class },
-        parameters = {
-        @StoredProcedureParameter(mode = ParameterMode.IN, name = "cDate", type = Date.class)
-})
-        })
+//@Entity
+//@Table(name = "Resource")
+//@NamedStoredProcedureQuery(
+//        name = "harvestResource_sp",
+//        procedureName = "harvestResource",
+//        parameters = {
+//                @StoredProcedureParameter(name = "cDate", mode = ParameterMode.IN, type = Date.class)
+//        }
+//)
 
 public class Test implements Serializable {
     @Id
