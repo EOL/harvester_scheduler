@@ -169,58 +169,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
 
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-assembly-plugin</artifactId>-->
-                <!--<version>2.6</version>-->
-                <!--<configuration>-->
-                    <!--&lt;!&ndash; get all project dependencies &ndash;&gt;-->
-                    <!--<descriptorRefs>-->
-                    <!--<descriptorRef>jar-with-dependencies</descriptorRef>-->
-                    <!--</descriptorRefs>-->
-                    <!--&lt;!&ndash; MainClass in mainfest make a executable jar &ndash;&gt;-->
-                    <!--<archive>-->
-                    <!--<manifest>-->
-                         <!--<mainClass>org.bibalex.scheduler.SchedulerAPI</mainClass>-->
-                    <!--</manifest>-->
-                    <!--</archive>-->
-
-                <!--</configuration>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                    <!--<id>make-assembly</id>-->
-                    <!--&lt;!&ndash; bind to the packaging phase &ndash;&gt;-->
-                    <!--<phase>package</phase>-->
-                    <!--<goals>-->
-                        <!--<goal>single</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-install-plugin</artifactId>-->
-                <!--<version>2.5.2</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<id>harv</id>-->
-                        <!--<phase>validate</phase>-->
-                        <!--<goals>-->
-                            <!--<goal>install-file</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<groupId>org.eol.harvester</groupId>-->
-                            <!--<artifactId>harvester</artifactId>-->
-                            <!--<version>1.0-SNAPSHOT</version>-->
-                            <!--<packaging>jar</packaging>-->
-                            <!--<file>/home/hduser/eol/workspace/Harvester_Java/target/harvester-1.0-SNAPSHOT.jar</file>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
-
         </plugins>
     </build>
 </project>
