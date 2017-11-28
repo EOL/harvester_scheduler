@@ -23,7 +23,6 @@ import org.bibalex.eol.harvester.*;
 
 import static org.bibalex.eol.scheduler.resource.Resource.HarvestFrequency.*;
 
-
 /**
  * Created by sara.mustafa on 5/2/17.
  */
@@ -38,8 +37,6 @@ public class HarvestService {
     @Autowired
     private HarvestRepository harvestRepository;
 
-    @Autowired
-    private TestRepository testRepository;
 
     @Autowired
     private ResourceRepository resourceRepository;
@@ -50,7 +47,9 @@ public class HarvestService {
 
     @PostConstruct
     private void init() {
+        System.out.println("starting init");
         resourcePriorityQueue = new PriorityQueue<Resource>(new ResourcePositionComparator());
+        System.out.println("after creating priority queue");
         Date midnight = new Date();
         midnight.setHours(23);
         midnight.setMinutes(30);
@@ -58,12 +57,16 @@ public class HarvestService {
 //        long initialDelay = new Date(midnight.getTime()-System.currentTimeMillis()).getTime();
 
         Harvester harv = new Harvester();
+
+        System.out.println("before initial delay");
         long initialDelay = (6000); // on minute
 //        long initialDelay = (1 * 60  *60); // on minute
 
 //        // every time the scheduled task run fill the queue from the database
+        System.out.println("Before executor");
         executor.scheduleAtFixedRate(()->{
-            System.out.println("HarvestService get resources to be harvested from DB:");
+            System.out.println("Inside executor");
+            logger.debug("\nHarvestService get resources to be harvested from DB:");
 //            StoredProcedureQuery storedProcedure = entityManager.createNamedStoredProcedureQuery("harvestResource");
 //            storedProcedure.setParameter("cDate",new Date(), TemporalType.DATE);
 //            storedProcedure.execute();
@@ -83,29 +86,42 @@ public class HarvestService {
 //            Resource createdBookId = (Resource) addBookNamedStoredProcedure.getSingleResult();
 
 
-            List<Resource> resList = harvestSp.getResultList();
-            System.out.println("aftr SP:" + resList.size());
-            System.out.println("aftr SP:" + resList.get(0));
+            List<Object[]> rows = harvestSp.getResultList();
+            System.out.println("aftr SP:" + rows.size());
 //            System.out.println("Size of returned resources" + resList.size());
-//
-            for(int i = 0; i < resList.size(); i++) {
-                System.out.println("r:" + resList.get(i));
-                Resource s = (Resource)resList.get(i);
-                System.out.println("r:" + s.toString());
+////
+            for(int i = 0; i < rows.size(); i++) {
+                Object[] row = rows.get(i);
+                Resource s = new Resource();
+                Integer x = (int)row[0];
+//                System.out.println(x);
+                Long lo = new Long(x);
+                s.setId(lo);
+                System.out.println("res:" + s.getId());
+                resourcePriorityQueue.add(s);
             }
-            resList.forEach( r ->  {System.out.println(r.getId());resourcePriorityQueue.add(r);});
+//            Resource s = new Resource();
+//            s.setId(110L);
+//            resourcePriorityQueue.add(s);
+
+//            resList.forEach( r ->  {System.out.println(r.getId());resourcePriorityQueue.add(r);});
             logger.debug("Resources to be harvested:");
             System.out.println("resourcePriorityQueue size:"  +resourcePriorityQueue.size());
             while(!resourcePriorityQueue.isEmpty()) {
                 Resource resource = resourcePriorityQueue.poll();
+//            Resource resource = new Resource();
+                System.out.println("Getting resource id:" + resource.getId());
                 System.out.println("Harvesting res:" + resource.getId());
                 Date startDate = new Date();
 //                logger.debug("Harvesting REsource Id:" + resource.getId());
 //                resourcePriorityQueue.poll();
 //                System.out.println("Harvesting: " + harv.test(resource.getId()));
                 try {
-                    logger.debug("testing");
-                    logger.debug("harvest status:" + harv.processHarvesting(resource.getId().intValue()));
+                    logger.debug("Going into harvesting:");
+                    System.out.println("Going into harvesting:");
+                    String status = harv.processHarvesting(resource.getId().intValue());
+                    System.out.println("harvest status:" + status);
+                    logger.debug("\nharvest status:" + status);
                     Date endDate = new Date();
                     Harvest harvest = new Harvest();
                     harvest.setResource(resource);
@@ -113,14 +129,22 @@ public class HarvestService {
                     harvest.setStart_at(startDate);
                     harvest.setState(getHarvestStatus("succeed"));
 
-
+                    logger.debug("before save new  harv");
+                    System.out.println("before save new  harv");
                     System.out.println("got new harv id:"+harvestRepository.save(harvest).getId());
 
                     resource.setLast_harvested_at(endDate);
     //                System.out.println("updated" + resourceRepository.setLastHarvestedDate("name", resource.getId()));
-                    System.out.println("updated:" +resourceRepository.save(resource));
+//                    System.out.println("updated resource id:" +resourceRepository.save(resource));
+                    System.out.println("after saving new harvest");
+                    logger.debug("after saving new harvest");
+
 
                 } catch (IOException e) {
+                    System.out.println("Thread error:" +resourceRepository.save(resource));
+
+                    logger.debug("Thread error:" + e.getMessage());
+
                     e.printStackTrace();
                 }
             };
