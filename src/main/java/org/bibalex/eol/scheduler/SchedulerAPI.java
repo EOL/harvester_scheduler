@@ -6,13 +6,6 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 
-/**
- *
- * Created by sara.mustafa on 4/10/17.
- */
-// mvn install:install-file -Dfile=/home/hduser/eol/workspace/Harvester_Java/target/harvester-1.0-SNAPSHOT.jar -DgroupId=org.eol.harvester -DartifactId=harvester -Dversion=1.0-SNAPSHOT -Dpackaging=jar
-// java -jar target/Scheduler-1.0-SNAPSHOT.jar
-
 @SpringBootApplication
 public class SchedulerAPI extends SpringBootServletInitializer {
 //    public class SchedulerAPI {

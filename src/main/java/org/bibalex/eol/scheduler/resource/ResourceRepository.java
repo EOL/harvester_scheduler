@@ -11,9 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Created by sara.mustafa on 4/18/17.
- */
+
 @RepositoryRestResource
 public interface ResourceRepository extends CrudRepository<Resource, Long> {
     public List<Resource> findByContentPartnerId(long contentPartnerId);

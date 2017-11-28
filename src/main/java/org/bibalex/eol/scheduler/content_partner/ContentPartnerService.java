@@ -13,9 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by sara.mustafa on 4/11/17.
- */
 
 @Service
 public class ContentPartnerService {
@@ -39,17 +36,6 @@ public class ContentPartnerService {
         validateContentPartner(id);
         partner.setId(id);
         return contentPartnerRepository.save(partner);
-//        ContentPartner currentPartner = contentPartnerRepository.findOne(id);
-//        if (currentPartner == null){
-//            throw new NotFoundException("content partner", id);
-//        }
-//        currentPartner.setName(partner.getName());
-//        currentPartner.setAbbreviation(partner.getAbbreviation());
-//        currentPartner.setDescription(partner.getDescription());
-//        currentPartner.setUrl(partner.getUrl());
-//        currentPartner.setLogo(null);
-//        currentPartner.setLogo_type(null);
- //       return contentPartnerRepository.save(currentPartner);
     }
 
     public ContentPartner updateContentPartner(long id, ContentPartner partner, String logoPath) throws SQLException {
@@ -59,18 +45,7 @@ public class ContentPartnerService {
         partner.setLogo_type(getFileExtension(logoPath));
         partner.setId(id);
         return contentPartnerRepository.save(partner);
-//        ContentPartner currentPartner = contentPartnerRepository.findOne(id);
-//        if (currentPartner == null){
-//            throw new NotFoundException("content partner", id);
-//        }
-//        currentPartner.setName(partner.getName());
-//        currentPartner.setAbbreviation(partner.getAbbreviation());
-//        currentPartner.setDescription(partner.getDescription());
-//        currentPartner.setUrl(partner.getUrl());
-//        currentPartner.setLogo(logoFile);
-//        currentPartner.setLogo_type(getFileExtension(logoName));
-//        return contentPartnerRepository.save(currentPartner);
-    }
+   }
 
     public List<ContentPartner> getAllContentPartners(){
         List<ContentPartner> partners = new ArrayList<>();

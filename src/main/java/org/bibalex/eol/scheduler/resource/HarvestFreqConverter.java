@@ -6,9 +6,6 @@ import javax.persistence.Convert;
 import static org.bibalex.eol.scheduler.resource.Resource.HarvestFrequency.*;
 
 
-/**
- * Created by sara.mustafa on 5/23/17.
- */
 @Convert
 public class HarvestFreqConverter implements AttributeConverter<Resource.HarvestFrequency, String>{
     @Override

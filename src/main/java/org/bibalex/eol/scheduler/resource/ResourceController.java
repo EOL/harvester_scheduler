@@ -10,9 +10,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Created by sara.mustafa on 4/18/17.
- */
+
+
 @RestController
 @RequestMapping("{contentPartnerId}/resources")
 public class ResourceController {

@@ -5,7 +5,6 @@ import org.bibalex.eol.scheduler.resource.ResourcePositionComparator;
 import org.bibalex.eol.scheduler.resource.ResourceRepository;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -23,9 +22,7 @@ import org.bibalex.eol.harvester.*;
 
 import static org.bibalex.eol.scheduler.resource.Resource.HarvestFrequency.*;
 
-/**
- * Created by sara.mustafa on 5/2/17.
- */
+
 @Service
 public class HarvestService {
 
@@ -41,85 +38,32 @@ public class HarvestService {
     @Autowired
     private ResourceRepository resourceRepository;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
-
     @PostConstruct
     private void init() {
-        System.out.println("starting init");
         resourcePriorityQueue = new PriorityQueue<Resource>(new ResourcePositionComparator());
-        System.out.println("after creating priority queue");
         Date midnight = new Date();
         midnight.setHours(23);
         midnight.setMinutes(30);
         midnight.setSeconds(0);
-//        long initialDelay = new Date(midnight.getTime()-System.currentTimeMillis()).getTime();
+        long initialDelay = new Date(midnight.getTime()-System.currentTimeMillis()).getTime();
 
         Harvester harv = new Harvester();
 
-        System.out.println("before initial delay");
-        long initialDelay = (6000); // on minute
-//        long initialDelay = (1 * 60  *60); // on minute
-
-//        // every time the scheduled task run fill the queue from the database
-        System.out.println("Before executor");
+        // every time the scheduled task run fill the queue from the database
         executor.scheduleAtFixedRate(()->{
-            System.out.println("Inside executor");
-            logger.debug("\nHarvestService get resources to be harvested from DB:");
-//            StoredProcedureQuery storedProcedure = entityManager.createNamedStoredProcedureQuery("harvestResource");
-//            storedProcedure.setParameter("cDate",new Date(), TemporalType.DATE);
-//            storedProcedure.execute();
-
-//            Query storedProcedure = entityManager.createNativeQuery("select * from resource;",
-//                    Resource.class)
-//                    ;
-
-
-            System.out.println("b4 SP");
-//            List<Resource> resList = testRepository.inOnlyTest(new Date());
-
-            StoredProcedureQuery harvestSp = entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
-            harvestSp.setParameter("cDate", new Date(), TemporalType.DATE);
-
-// Stored procedure call
-//            Resource createdBookId = (Resource) addBookNamedStoredProcedure.getSingleResult();
-
-
-            List<Object[]> rows = harvestSp.getResultList();
-            System.out.println("aftr SP:" + rows.size());
-//            System.out.println("Size of returned resources" + resList.size());
-////
-            for(int i = 0; i < rows.size(); i++) {
-                Object[] row = rows.get(i);
-                Resource s = new Resource();
-                Integer x = (int)row[0];
-//                System.out.println(x);
-                Long lo = new Long(x);
-                s.setId(lo);
-                System.out.println("res:" + s.getId());
-                resourcePriorityQueue.add(s);
-            }
-//            Resource s = new Resource();
-//            s.setId(110L);
-//            resourcePriorityQueue.add(s);
-
-//            resList.forEach( r ->  {System.out.println(r.getId());resourcePriorityQueue.add(r);});
+            logger.debug("HarvestService get resources to be harvested from DB:");
+            StoredProcedureQuery storedProcedure = entityManager.createNamedStoredProcedureQuery("harvestResource");
+            storedProcedure.setParameter("cDate",new Date(), TemporalType.DATE);
+            List<Resource> resList = storedProcedure.getResultList();
+            resList.forEach( r ->  resourcePriorityQueue.add(r));
             logger.debug("Resources to be harvested:");
-            System.out.println("resourcePriorityQueue size:"  +resourcePriorityQueue.size());
-            while(!resourcePriorityQueue.isEmpty()) {
-                Resource resource = resourcePriorityQueue.poll();
-//            Resource resource = new Resource();
-                System.out.println("Getting resource id:" + resource.getId());
-                System.out.println("Harvesting res:" + resource.getId());
-                Date startDate = new Date();
-//                logger.debug("Harvesting REsource Id:" + resource.getId());
-//                resourcePriorityQueue.poll();
-//                System.out.println("Harvesting: " + harv.test(resource.getId()));
+            resourcePriorityQueue.stream().forEach(resource -> {
                 try {
-                    logger.debug("Going into harvesting:");
-                    System.out.println("Going into harvesting:");
-                    String status = harv.processHarvesting(resource.getId().intValue());
+                    logger.debug("Id:" + resource.getId());
+                    Date startDate = new Date();
+                    String status = null;
+                    status = harv.processHarvesting(resource.getId().intValue());
+
                     System.out.println("harvest status:" + status);
                     logger.debug("\nharvest status:" + status);
                     Date endDate = new Date();
@@ -134,54 +78,17 @@ public class HarvestService {
                     System.out.println("got new harv id:"+harvestRepository.save(harvest).getId());
 
                     resource.setLast_harvested_at(endDate);
-    //                System.out.println("updated" + resourceRepository.setLastHarvestedDate("name", resource.getId()));
-//                    System.out.println("updated resource id:" +resourceRepository.save(resource));
-                    System.out.println("after saving new harvest");
-                    logger.debug("after saving new harvest");
 
-
+                    //save resource
                 } catch (IOException e) {
-                    System.out.println("Thread error:" +resourceRepository.save(resource));
-
-                    logger.debug("Thread error:" + e.getMessage());
-
                     e.printStackTrace();
                 }
-            };
-//
-//        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
-        }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 30 sec
+            });
+
+        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
 //    }, initialDelay , 86400000L, TimeUnit.MILLISECONDS);
     }
 
-
-    private static void call() throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-
-        CallableStatement cStmt = getDBConnection().prepareCall("{CALL harvestResource(?)}");
-        Date startDate = new Date();
-        cStmt.setDate(1, new java.sql.Date(startDate.getTime()));
-        cStmt.execute();
-        ResultSet rs1 = cStmt.getResultSet();
-
-        while (rs1.next()) {
-            System.out.println(rs1.toString());
-        }
-        rs1.close();
-
-        cStmt.close();
-
-    }
-
-    private static Connection getDBConnection() throws ClassNotFoundException, IllegalAccessException, InstantiationException, SQLException {
-
-        Class.forName("com.mysql.jdbc.Driver").newInstance();
-
-        String ConnectionString="jdbc:mysql://172.16.0.161:3306/eol?rewriteBatchedStatements=true&useSSL=false&user=root&password=XiB6bAMgesJbmUUn";
-//        String ConnectionString="jdbc:mysql://localhost:3306/eol?rewriteBatchedStatements=true&useSSL=false&user=root&password=Root";
-        Connection conn = DriverManager.getConnection(ConnectionString);
-    return conn;
-
-    }
 
     private Harvest.State getHarvestStatus(String harvestStr) {
         switch (harvestStr) {

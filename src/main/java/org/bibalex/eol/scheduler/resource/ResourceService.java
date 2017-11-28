@@ -8,9 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * Created by sara.mustafa on 4/18/17.
- */
+
 @Service
 public class ResourceService {
 

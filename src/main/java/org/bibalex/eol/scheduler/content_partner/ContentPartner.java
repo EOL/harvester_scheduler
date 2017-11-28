@@ -9,9 +9,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-/**
- * Created by sara.mustafa on 4/11/17.
- */
 @Entity
 @JsonIgnoreProperties
 public class ContentPartner implements Serializable{

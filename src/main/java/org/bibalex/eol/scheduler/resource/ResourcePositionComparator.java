@@ -2,9 +2,8 @@ package org.bibalex.eol.scheduler.resource;
 
 import java.util.Comparator;
 
-/**
- * Created by sara.mustafa on 5/28/17.
- */
+
+
 public class ResourcePositionComparator implements Comparator<Resource>{
 
     @Override

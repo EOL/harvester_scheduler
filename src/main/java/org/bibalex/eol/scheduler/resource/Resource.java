@@ -14,9 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by sara.mustafa on 4/18/17.
- */
 
 @Entity
 @Table(name = "Resource")
@@ -28,10 +25,7 @@ import java.util.Set;
                 @StoredProcedureParameter(name = "cDate", mode = ParameterMode.IN, type = Date.class)
         }
 )
-//@NamedStoredProcedureQuery(name = "harvestResource", procedureName = "harvestResource", resultClasses = {Resource.class },
-//        parameters = {
-//        @StoredProcedureParameter(mode = ParameterMode.IN, name = "cDate", type = Date.class)
-//})
+
 
 public class Resource implements Serializable{
 

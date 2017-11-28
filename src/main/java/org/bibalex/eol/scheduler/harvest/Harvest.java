@@ -6,14 +6,8 @@ import org.bibalex.eol.scheduler.resource.Resource;
 import javax.persistence.*;
 import java.util.Date;
 
-/**
- * Created by sara.mustafa on 5/2/17.
- */
+
 @Entity
-//@NamedStoredProcedureQuery(name = "harvestResource", procedureName = "harvestResource", resultClasses = {Resource.class },
-//        parameters = {
-//                @StoredProcedureParameter(mode = ParameterMode.IN, name = "cDate", type = Date.class)
-//        })
 public class Harvest {
 
     public enum State{

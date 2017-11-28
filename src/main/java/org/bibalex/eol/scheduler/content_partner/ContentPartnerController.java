@@ -10,9 +10,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-/**
- * Created by sara.mustafa on 4/11/17.
- */
 
 @RestController
 @RequestMapping("/contentPartners")
@@ -29,15 +26,6 @@ public class ContentPartnerController {
         return () -> ResponseEntity.ok(contentPartnerService.createContentPartner(partner));
     }
 
-//    @RequestMapping(method = RequestMethod.POST, value="/create")
-//    public Callable<ResponseEntity<?>> create(@RequestBody  ContentPartner partner){
-//        logger.debug("--------------------");
-//        if(partner.getResources().size() > 0) {
-//            System.out.println("size > 0");
-//            partner.getResources().stream().forEach(x -> {System.out.println(x.getName());});
-//        }
-//        return () -> ResponseEntity.ok(contentPartnerService.createContentPartner(partner));
-//    }
 
     @RequestMapping( method = RequestMethod.POST)
     @ResponseBody
