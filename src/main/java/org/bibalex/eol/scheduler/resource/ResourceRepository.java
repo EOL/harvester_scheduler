@@ -16,14 +16,4 @@ import java.util.Optional;
 public interface ResourceRepository extends CrudRepository<Resource, Long> {
     public List<Resource> findByContentPartnerId(long contentPartnerId);
     public Optional<Resource> findById(long id);
-
-
-
-//    @Modifying(clearAutomatically = true)
-//    @Query("UPDATE Resource c SET c.name = :name WHERE c.id = :id")
-//    public int setLastHarvestedDate(@Param("name") String name, @Param("id") Long id);
-
-
-//    @Procedure(name = "harvestResource")
-//    public List<Resource> x(@Param("cDate") Date inParam1);
 }

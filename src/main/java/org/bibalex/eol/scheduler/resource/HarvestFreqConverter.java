@@ -7,7 +7,7 @@ import static org.bibalex.eol.scheduler.resource.Resource.HarvestFrequency.*;
 
 
 @Convert
-public class HarvestFreqConverter implements AttributeConverter<Resource.HarvestFrequency, String>{
+public class HarvestFreqConverter implements AttributeConverter<Resource.HarvestFrequency, String> {
     @Override
     public String convertToDatabaseColumn(Resource.HarvestFrequency harvestFrequency) {
         switch (harvestFrequency) {

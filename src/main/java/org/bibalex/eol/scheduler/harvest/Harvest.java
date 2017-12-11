@@ -24,8 +24,9 @@ public class Harvest {
     private Date validated_at;
     private Date deltas_created_at;
     private Date completed_at;
+
     @Enumerated(EnumType.STRING)
-    private State state;
+    private Harvest.State state;
     @ManyToOne
     @JoinColumn (name="resource_id")
     @JsonBackReference
@@ -85,5 +86,20 @@ public class Harvest {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    Harvest.State getHarvestStatus(String harvestStr) {
+        switch (harvestStr) {
+            case "succeed":
+                return Harvest.State.succeed;
+            case "failed":
+                return Harvest.State.failed;
+            case "running":
+                return Harvest.State.running;
+            case "pending":
+                return Harvest.State.pending;
+            default:
+                throw new IllegalArgumentException("Unknown " + harvestStr);
+        }
     }
 }
