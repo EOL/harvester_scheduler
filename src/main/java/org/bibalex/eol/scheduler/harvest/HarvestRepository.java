@@ -16,10 +16,4 @@ import java.util.List;
 public interface HarvestRepository extends CrudRepository<Harvest, Long>{
 
     public List<Harvest> findByResourceId(long resourceId);
-
-
-//    @Modifying
-//    @Query("UPDATE Resource u set u.last_harvested_at = ?1 where u.id = ?2")
-//    int setLastHarvestedDate(Date last_harvested_at, Long id);
-
 }

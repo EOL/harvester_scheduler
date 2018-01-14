@@ -1,34 +1,34 @@
 package org.bibalex.eol.scheduler.resource;
 
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.bibalex.eol.scheduler.content_partner.ContentPartner;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.hibernate.validator.constraints.Range;
-import org.springframework.data.jpa.repository.query.Procedure;
-import org.springframework.data.repository.query.Param;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-
+/**
+ * Created by hduser on 12/6/17.
+ */
 @Entity
 @Table(name = "Resource")
-@NamedStoredProcedureQuery(
-        name = "harvestResource_sp",
-        procedureName = "harvestResource",
-//        resultClasses = {Resource.class },
-        parameters = {
-                @StoredProcedureParameter(name = "cDate", mode = ParameterMode.IN, type = Date.class)
-        }
-)
+@NamedStoredProcedureQueries({
+        @NamedStoredProcedureQuery(
+                name = "harvestResource_sp",
+                procedureName = "harvestResource",
+                resultClasses = { Resource.class },
+                parameters = {
+                        @StoredProcedureParameter(
+                                name = "cDate",
+                                type = Date.class,
+                                mode = ParameterMode.IN) })
+})
 
-
-public class Resource implements Serializable{
-
+public class Resource {
     private enum Type {
         url,
         file
@@ -47,11 +47,11 @@ public class Resource implements Serializable{
     private String origin_url;
     private String uploaded_url;
     @Enumerated(EnumType.STRING)
-    private Type type;
+    private Resource.Type type;
     private String path;
     private Date last_harvested_at;
     @Convert(converter = HarvestFreqConverter.class)
-    private HarvestFrequency harvest_frequency;
+    private Resource.HarvestFrequency harvest_frequency;
     @Range(min = 0, max = 31)
     private int day_of_month=0;
     private int nodes_count;
@@ -59,6 +59,7 @@ public class Resource implements Serializable{
     private boolean is_paused = false;
     private boolean is_approved = false;
     private boolean is_trusted = false;
+    private boolean forced_internally = false;
     private boolean is_autopublished = false;
     private boolean is_forced = false;
     private int dataset_license = 47;
@@ -68,6 +69,9 @@ public class Resource implements Serializable{
     private String default_rights_statement;
     private String default_rights_holder;
     private int default_language_id = 152;
+    private Date created_at;
+    private Date updated_at;
+
     @ManyToOne
     @JoinColumn (name="content_partner_id")
     @JsonBackReference
@@ -75,10 +79,10 @@ public class Resource implements Serializable{
     @OneToMany(mappedBy ="resource")
     private Set<Harvest> harvests = new HashSet<>();
 
-    public  Resource(){
+    public Resource(){
     }
 
-    public  Resource(long id){
+    public Resource(long id){
     }
 
     public Long getId() {
@@ -113,11 +117,11 @@ public class Resource implements Serializable{
         this.uploaded_url = uploaded_url;
     }
 
-    public Type getType() {
+    public Resource.Type getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(Resource.Type type) {
         this.type = type;
     }
 
@@ -137,11 +141,11 @@ public class Resource implements Serializable{
         this.last_harvested_at = last_harvested_at;
     }
 
-    public HarvestFrequency getHarvest_frequency() {
+    public Resource.HarvestFrequency getHarvest_frequency() {
         return harvest_frequency;
     }
 
-    public void setHarvest_frequency(HarvestFrequency harvest_frequency) {
+    public void setHarvest_frequency(Resource.HarvestFrequency harvest_frequency) {
         this.harvest_frequency = harvest_frequency;
     }
 
@@ -281,10 +285,29 @@ public class Resource implements Serializable{
         this.harvests = harvests;
     }
 
-    @Override
-    public String toString() {
-        return "Res:"  +harvest_frequency.toString();
+    public Date getCreated_at() {
+        return created_at;
     }
 
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
+    }
+
+
+    public boolean isForced_internally() {
+        return forced_internally;
+    }
+
+    public void setForced_internally(boolean forced_internally) {
+        this.forced_internally = forced_internally;
+    }
 
 }
