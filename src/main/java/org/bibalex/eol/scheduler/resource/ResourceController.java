@@ -13,7 +13,7 @@ import java.util.concurrent.Callable;
 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/") 
 public class ResourceController {
     private static final Logger logger = Logger.getLogger(ResourceController.class);
     @Autowired
