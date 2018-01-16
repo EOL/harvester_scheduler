@@ -74,33 +74,39 @@ public class HarvestService {
                 System.out.println("Harvesting resource:" + resource.getId());
                 logger.debug("\nHarvesting resource:" + resource.getId());
                 Date startDate = new Date();
-                try {
+//                try {
                     logger.debug("Going into harvesting:");
                     System.out.println("Going into harvesting:");
-                    String status = harv.processHarvesting(resource.getId().intValue());
+                    resource.setIs_harvest_inprogress(true);
+//                    String status = harv.processHarvesting(resource.getId().intValue());
+                    String status = "success";
                     System.out.println("Harvesting status:" + status);
                     logger.debug("\nHarvesting status:" + status);
                     Date endDate = new Date();
+                    resource.setForced_internally(false);
                     resource.setLast_harvested_at(endDate);
 
                     Harvest harvest = new Harvest();
                     harvest.setResource(resource);
                     harvest.setCompleted_at(endDate);
                     harvest.setStart_at(startDate);
-                    harvest.setState(harvest.getHarvestStatus(status));
+//                    harvest.setState(harvest.getHarvestStatus(status));
+                    resource.setIs_harvest_inprogress(false);
 
-                    System.out.println("Got new harvest id:" + harvestRepository.save(harvest).getId());
-                    logger.debug("Got new harvest id:" + harvestRepository.save(harvest).getId());
+
+                    long harvId = harvestRepository.save(harvest).getId();
+                    System.out.println("Got new harvest id:" + harvId);
+                    logger.debug("Got new harvest id:" + harvId);
 
 
                     long resId = resourceRepository.save(resource).getId();
                     System.out.println("Harvested resource:" + resId);
                     logger.debug("Harvested resource:" + resId);
-                } catch (IOException e) {
-                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
-                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
-                    e.printStackTrace();
-                }
+//                } catch (IOException e) {
+//                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+//                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+//                    e.printStackTrace();
+//                }
             };
 //        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
         }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 30 sec

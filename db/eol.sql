@@ -24,6 +24,7 @@ USE `eol`;
 DROP TABLE IF EXISTS `content_partner`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `content_partner` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
@@ -34,9 +35,9 @@ CREATE TABLE `content_partner` (
   `logo_type` varchar(45) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `updated_at_UNIQUE` (`updated_at`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -64,6 +65,7 @@ DELIMITER ;
 DROP TABLE IF EXISTS `harvest`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
+
 CREATE TABLE `harvest` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `resource_id` int(11) NOT NULL,
@@ -71,11 +73,12 @@ CREATE TABLE `harvest` (
   `validated_at` datetime DEFAULT NULL,
   `deltas_created_at` datetime DEFAULT NULL,
   `completed_at` datetime DEFAULT NULL,
-  `state` enum('succeed','failed','running','pending																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																												') DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `state` enum('succeed','failed','running','pending') DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,3 +161,49 @@ DELIMITER ;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2017-10-31 12:14:12
+
+ALTER TABLE `eol`.`content_partner`
+DROP INDEX `updated_at_UNIQUE` ;
+
+
+ALTER TABLE `eol`.`resource`
+CHANGE COLUMN `updated_at` `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ;
+
+ALTER TABLE `eol`.`resource`
+CHANGE COLUMN `created_at` `created_at` TIMESTAMP NULL DEFAULT NULL,
+
+
+ALTER TABLE `eol`.`resource`
+ADD COLUMN `is_harvest_inprogress` TINYINT(1)  DEFAULT '0' AFTER `path`;
+
+
+
+USE `eol`;
+DROP procedure IF EXISTS `harvestResource`;
+
+DELIMITER $$
+USE `eol`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `harvestResource`(IN cDate datetime)
+begin
+ SELECT * FROM resource
+    WHERE  `type` = 'file' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
+    `is_forced` = '1')
+    UNION
+    SELECT * FROM resource
+    WHERE  `type` = 'url' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
+    `is_forced` = '1' OR DATE_ADD(`last_harvested_at`,INTERVAL `harvest_frequency` DAY) = cDate) ;
+
+
+
+
+end$$
+
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getHarvestedResources`(IN cDate datetime)
+begin
+ SELECT count(*) FROM resource
+    WHERE `last_harvested_at` >= cDate AND is_harvest_inprogress != '1' ;
+end$$
+DELIMITER ;

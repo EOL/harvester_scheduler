@@ -25,6 +25,14 @@ import java.util.Set;
                         @StoredProcedureParameter(
                                 name = "cDate",
                                 type = Date.class,
+                                mode = ParameterMode.IN) }),
+        @NamedStoredProcedureQuery(
+                name = "getHarvestedResources_sp",
+                procedureName = "getHarvestedResources",
+                parameters = {
+                        @StoredProcedureParameter(
+                                name = "cDate",
+                                type = Date.class,
                                 mode = ParameterMode.IN) })
 })
 
@@ -57,6 +65,7 @@ public class Resource {
     private int nodes_count;
     private int position = -1;
     private boolean is_paused = false;
+    private boolean is_harvest_inprogress = false;
     private boolean is_approved = false;
     private boolean is_trusted = false;
     private boolean forced_internally = false;
@@ -301,6 +310,13 @@ public class Resource {
         this.updated_at = updated_at;
     }
 
+    public boolean isIs_harvest_inprogress() {
+        return is_harvest_inprogress;
+    }
+
+    public void setIs_harvest_inprogress(boolean is_harvest_inprogress) {
+        this.is_harvest_inprogress = is_harvest_inprogress;
+    }
 
     public boolean isForced_internally() {
         return forced_internally;
