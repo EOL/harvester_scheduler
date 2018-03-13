@@ -5,6 +5,7 @@ import org.bibalex.eol.scheduler.resource.Resource;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +22,8 @@ public class ContentPartner implements Serializable{
     private String description;
     private String logo_path;
     private String logo_type;
+    private Date created_at;
+    private Date updated_at;
     @OneToMany(mappedBy ="contentPartner")
     private Set<Resource> resources = new HashSet<>();
 
@@ -91,6 +94,22 @@ public class ContentPartner implements Serializable{
 
     public void setLogo_type(String logo_type) {
         this.logo_type = logo_type;
+    }
+
+    public Date getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
 
     @Override

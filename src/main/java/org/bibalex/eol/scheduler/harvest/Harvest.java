@@ -24,6 +24,8 @@ public class Harvest {
     private Date validated_at;
     private Date deltas_created_at;
     private Date completed_at;
+    private Date created_at;
+    private Date updated_at;
 
     @Enumerated(EnumType.STRING)
     private Harvest.State state;
@@ -101,5 +103,21 @@ public class Harvest {
             default:
                 throw new IllegalArgumentException("Unknown " + harvestStr);
         }
+    }
+
+    public Date getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
     }
 }
