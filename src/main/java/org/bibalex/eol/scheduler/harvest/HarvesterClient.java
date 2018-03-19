@@ -27,6 +27,14 @@ import java.util.Properties;
 public class HarvesterClient {
     public void callHarvester(String resId){
         System.out.println("start calling  harvester");
+
+        Properties prop = new Properties();
+        InputStream input = HarvesterClient.class.getClassLoader().getResourceAsStream("application.properties");
+        try {
+            prop.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //
 //        Properties properties = new Properties();
 //        try (InputStream is = getClass().getResourceAsStream("application.properties")) {
@@ -39,7 +47,8 @@ public class HarvesterClient {
 //        System.out.println("done loading prop");
 
 
-        String uri = "http://localhost:8090/harvest/";
+//        String uri = "http://localhost:8090/harvest/";
+        String uri = prop.getProperty("harvester");
         System.out.println(uri);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getMessageConverters().add(
@@ -47,17 +56,15 @@ public class HarvesterClient {
 
         System.out.println("done rest template");
         Map<String, String> params = new HashMap<String, String>();
-        params.put("resourceID", resId);
+        params.put(prop.getProperty("resourceId"), resId);
 
 
         LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-        map.add("resourceID",resId);
+        map.add(prop.getProperty("resourceId"),resId);
 
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("Content-Type", "multipart/form-data"); // we are sending a form
         headers.set("Accept", "text/plain"); // looks like you want a string back
 
 

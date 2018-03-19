@@ -25,7 +25,6 @@ public class HarvestService {
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     @PersistenceContext
     private EntityManager entityManager;
-    private EntityManagerFactory entityManagerFactory;
     private PriorityQueue<Resource> resourcePriorityQueue;
     @Autowired
     private HarvestRepository harvestRepository;
@@ -62,7 +61,7 @@ public class HarvestService {
             Date dt = new Date();
 
             StoredProcedureQuery findByYearProcedure =
-                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp").setParameter("cDate", dt);;
+                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
 
             StoredProcedureQuery storedProcedure =
                     findByYearProcedure.setParameter("cDate", dt);
