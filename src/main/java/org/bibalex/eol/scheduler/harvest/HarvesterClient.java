@@ -64,8 +64,8 @@ public class HarvesterClient {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        headers.set("Accept", "text/plain"); // looks like you want a string back
+//        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+//        headers.set("Accept", "text/plain"); // looks like you want a string back
 
 
         HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
