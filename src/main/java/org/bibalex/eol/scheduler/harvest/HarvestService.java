@@ -58,61 +58,61 @@ public class HarvestService {
         executor.scheduleAtFixedRate(()->{
 
             logger.debug("\nHarvestService get resources to be harvested from DB:");
-//            StoredProcedureQuery findByYearProcedure =
-//                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
-//
-//            Date dt = new Date();
-//            StoredProcedureQuery storedProcedure =
-//                    findByYearProcedure.setParameter("cDate", dt);
-//
-//            logger.debug("Resources count to be harvested" + storedProcedure.getResultList().size());
-//            System.out.println("--->" + storedProcedure.getResultList().size());
-//            storedProcedure.getResultList()
-//                    .forEach(resource -> {
-//                        Resource res = (Resource)resource;
-//                        resourcePriorityQueue.add(res);
-//                    });
-//
-//            while(!resourcePriorityQueue.isEmpty()) {
-//                Resource resource = resourcePriorityQueue.poll();
-//                System.out.println("Harvesting resource:" + resource.getId());
-//                logger.debug("\nHarvesting resource:" + resource.getId());
-//                Date startDate = new Date();
-//                try{
-//                    logger.debug("Going into harvesting:");
-//                    System.out.println("Going into harvesting:");
-//                    resource.setHarvestInprogress(true);
-//                    Harvest.State status = harvestClient.harvestResource(resource.getId() + "");
-//
-//                    System.out.println("Harvesting status:" + status);
-//                    logger.debug("\nHarvesting status:" + status);
-//                    Date endDate = new Date();
-//                    resource.setForcedInternally(false);
-//                    resource.setLastHarvestedAt(endDate);
-//
-//                    Harvest harvest = new Harvest();
-//                    harvest.setResource(resource);
-//                    harvest.setCompleted_at(endDate);
-//                    harvest.setStart_at(startDate);
-//                    harvest.setState(status);
-//                    resource.setHarvestInprogress(false);
-//
-//
-//                    long harvId = harvestRepository.save(harvest).getId();
-//                    System.out.println("Got new harvest id:" + harvId);
-//                    logger.debug("Got new harvest id:" + harvId);
-//
-//
-//                    long resId = resourceRepository.save(resource).getId();
-//                    System.out.println("Harvested resource:" + resId);
-//                    logger.debug("Harvested resource:" + resId);
-//                } catch (Exception e) {
-//                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
-//                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
-//                    e.printStackTrace();
-//                }
-//            };
-////        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
+            StoredProcedureQuery findByYearProcedure =
+                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
+
+            Date dt = new Date();
+            StoredProcedureQuery storedProcedure =
+                    findByYearProcedure.setParameter("cDate", dt);
+
+            logger.debug("Resources count to be harvested" + storedProcedure.getResultList().size());
+            System.out.println("--->" + storedProcedure.getResultList().size());
+            storedProcedure.getResultList()
+                    .forEach(resource -> {
+                        Resource res = (Resource)resource;
+                        resourcePriorityQueue.add(res);
+                    });
+
+            while(!resourcePriorityQueue.isEmpty()) {
+                Resource resource = resourcePriorityQueue.poll();
+                System.out.println("Harvesting resource:" + resource.getId());
+                logger.debug("\nHarvesting resource:" + resource.getId());
+                Date startDate = new Date();
+                try{
+                    logger.debug("Going into harvesting:");
+                    System.out.println("Going into harvesting:");
+                    resource.setHarvestInprogress(true);
+                    Harvest.State status = harvestClient.harvestResource(resource.getId() + "");
+
+                    System.out.println("Harvesting status:" + status);
+                    logger.debug("\nHarvesting status:" + status);
+                    Date endDate = new Date();
+                    resource.setForcedInternally(false);
+                    resource.setLastHarvestedAt(endDate);
+
+                    Harvest harvest = new Harvest();
+                    harvest.setResource(resource);
+                    harvest.setCompleted_at(endDate);
+                    harvest.setStart_at(startDate);
+                    harvest.setState(status);
+                    resource.setHarvestInprogress(false);
+
+
+                    long harvId = harvestRepository.save(harvest).getId();
+                    System.out.println("Got new harvest id:" + harvId);
+                    logger.debug("Got new harvest id:" + harvId);
+
+
+                    long resId = resourceRepository.save(resource).getId();
+                    System.out.println("Harvested resource:" + resId);
+                    logger.debug("Harvested resource:" + resId);
+                } catch (Exception e) {
+                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+                    e.printStackTrace();
+                }
+            };
+//        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
         }, initialDelay , 40000L, TimeUnit.MILLISECONDS);  // delay 4 sec
 //    }, initialDelay , 86400000L, TimeUnit.MILLISECONDS);
     }
