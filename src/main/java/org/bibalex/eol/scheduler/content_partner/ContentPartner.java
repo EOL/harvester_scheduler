@@ -2,7 +2,6 @@ package org.bibalex.eol.scheduler.content_partner;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.bibalex.eol.scheduler.resource.Resource;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -11,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @JsonIgnoreProperties
-public class ContentPartner implements Serializable{
+public class ContentPartner implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -19,8 +18,13 @@ public class ContentPartner implements Serializable{
     private String abbreviation;
     private String url;
     private String description;
-    private String logo_path;
-    private String logo_type;
+
+    @Column(name="logo_path")
+    private String logoPath;
+
+    @Column(name="logo_type")
+    private String logoType;
+
     @OneToMany(mappedBy ="contentPartner")
     private Set<Resource> resources = new HashSet<>();
 
@@ -73,24 +77,24 @@ public class ContentPartner implements Serializable{
         this.description = description;
     }
 
-    public String getLogo_path() {
-        return logo_path;
+    public String getLogoPath() {
+        return logoPath;
     }
 
-    public void setLogo_path(String logo) {
-        this.logo_path = logo;
+    public void setLogoPath(String logo) {
+        this.logoPath = logo;
     }
 
     public void setResources(Set<Resource> resources) {
         this.resources = resources;
     }
 
-    public String getLogo_type() {
-        return logo_type;
+    public String getLogoType() {
+        return logoType;
     }
 
-    public void setLogo_type(String logo_type) {
-        this.logo_type = logo_type;
+    public void setLogoType(String logo_type) {
+        this.logoType = logo_type;
     }
 
     @Override

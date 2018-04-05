@@ -2,6 +2,7 @@ package org.bibalex.eol.scheduler.harvest;
 
 import org.bibalex.eol.scheduler.resource.*;
 import org.apache.log4j.Logger;
+import org.bibalex.eol.scheduler.utils.PropertiesFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
@@ -13,7 +14,6 @@ import java.util.PriorityQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.bibalex.eol.harvester.*;
 
 
 @Service
@@ -28,12 +28,21 @@ public class HarvestService {
     private HarvestRepository harvestRepository;
     @Autowired
     private ResourceRepository resourceRepository;
+    private PropertiesFile app;
 
+
+    @Autowired
+    public void setApp(PropertiesFile app) {
+        this.app = app;
+    }
 
     @PostConstruct
     private void init() {
         System.out.println("starting init");
         resourcePriorityQueue = new PriorityQueue<Resource>(new ResourcePositionComparator());
+        HarvesterClient harvestClient = new HarvesterClient();
+//        harvestClient.setApp(app);
+
         System.out.println("after creating priority queue");
         Date midnight = new Date();
         midnight.setHours(23);
@@ -41,75 +50,70 @@ public class HarvestService {
         midnight.setSeconds(0);
 //        long initialDelay = new Date(midnight.getTime()-System.currentTimeMillis()).getTime();
 
-        Harvester harv = new Harvester();
-
         System.out.println("before initial delay");
         long initialDelay = (10000); // on minute
 //        long initialDelay = (1 * 60  *60); // on minute
 
 //        // every time the scheduled task run fill the queue from the database
-        System.out.println("Before executor");
         executor.scheduleAtFixedRate(()->{
-            System.out.println("Inside executor");
+
             logger.debug("\nHarvestService get resources to be harvested from DB:");
-            System.out.println("b4 SP");//------------------
-            StoredProcedureQuery findByYearProcedure =
-                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
-
-            Date dt = new Date();
-            StoredProcedureQuery storedProcedure =
-                    findByYearProcedure.setParameter("cDate", dt);
-
-            logger.debug(storedProcedure.getResultList().size());
-            System.out.println("--->" + storedProcedure.getResultList().size());
-            storedProcedure.getResultList()
-                    .forEach(resource -> {
-                        Resource res = (Resource)resource;
-                        System.out.println("--->" + res.getName()  +"-" + res.getContentPartner().getName() + "-" + res.getHarvest_frequency());
-                        resourcePriorityQueue.add(res);
-                    });
-
-            while(!resourcePriorityQueue.isEmpty()) {
-                Resource resource = resourcePriorityQueue.poll();
-                System.out.println("Harvesting resource:" + resource.getId());
-                logger.debug("\nHarvesting resource:" + resource.getId());
-                Date startDate = new Date();
-//                try {
-                    logger.debug("Going into harvesting:");
-                    System.out.println("Going into harvesting:");
-                    resource.setIs_harvest_inprogress(true);
-//                    String status = harv.processHarvesting(resource.getId().intValue());
-                    String status = "success";
-                    System.out.println("Harvesting status:" + status);
-                    logger.debug("\nHarvesting status:" + status);
-                    Date endDate = new Date();
-                    resource.setForced_internally(false);
-                    resource.setLast_harvested_at(endDate);
-
-                    Harvest harvest = new Harvest();
-                    harvest.setResource(resource);
-                    harvest.setCompleted_at(endDate);
-                    harvest.setStart_at(startDate);
-//                    harvest.setState(harvest.getHarvestStatus(status));
-                    resource.setIs_harvest_inprogress(false);
-
-
-                    long harvId = harvestRepository.save(harvest).getId();
-                    System.out.println("Got new harvest id:" + harvId);
-                    logger.debug("Got new harvest id:" + harvId);
-
-
-                    long resId = resourceRepository.save(resource).getId();
-                    System.out.println("Harvested resource:" + resId);
-                    logger.debug("Harvested resource:" + resId);
-//                } catch (IOException e) {
+//            StoredProcedureQuery findByYearProcedure =
+//                    entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
+//
+//            Date dt = new Date();
+//            StoredProcedureQuery storedProcedure =
+//                    findByYearProcedure.setParameter("cDate", dt);
+//
+//            logger.debug("Resources count to be harvested" + storedProcedure.getResultList().size());
+//            System.out.println("--->" + storedProcedure.getResultList().size());
+//            storedProcedure.getResultList()
+//                    .forEach(resource -> {
+//                        Resource res = (Resource)resource;
+//                        resourcePriorityQueue.add(res);
+//                    });
+//
+//            while(!resourcePriorityQueue.isEmpty()) {
+//                Resource resource = resourcePriorityQueue.poll();
+//                System.out.println("Harvesting resource:" + resource.getId());
+//                logger.debug("\nHarvesting resource:" + resource.getId());
+//                Date startDate = new Date();
+//                try{
+//                    logger.debug("Going into harvesting:");
+//                    System.out.println("Going into harvesting:");
+//                    resource.setHarvestInprogress(true);
+//                    Harvest.State status = harvestClient.harvestResource(resource.getId() + "");
+//
+//                    System.out.println("Harvesting status:" + status);
+//                    logger.debug("\nHarvesting status:" + status);
+//                    Date endDate = new Date();
+//                    resource.setForcedInternally(false);
+//                    resource.setLastHarvestedAt(endDate);
+//
+//                    Harvest harvest = new Harvest();
+//                    harvest.setResource(resource);
+//                    harvest.setCompleted_at(endDate);
+//                    harvest.setStart_at(startDate);
+//                    harvest.setState(status);
+//                    resource.setHarvestInprogress(false);
+//
+//
+//                    long harvId = harvestRepository.save(harvest).getId();
+//                    System.out.println("Got new harvest id:" + harvId);
+//                    logger.debug("Got new harvest id:" + harvId);
+//
+//
+//                    long resId = resourceRepository.save(resource).getId();
+//                    System.out.println("Harvested resource:" + resId);
+//                    logger.debug("Harvested resource:" + resId);
+//                } catch (Exception e) {
 //                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
 //                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
 //                    e.printStackTrace();
 //                }
-            };
-//        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
-        }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 30 sec
+//            };
+////        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
+        }, initialDelay , 40000L, TimeUnit.MILLISECONDS);  // delay 4 sec
 //    }, initialDelay , 86400000L, TimeUnit.MILLISECONDS);
     }
 

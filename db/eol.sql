@@ -189,7 +189,7 @@ begin
     WHERE  `type` = 'file' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
     `is_forced` = '1')
     UNION
-    SELECT * FROM resource
+    SELECT * FROM resourcePropertiesFile
     WHERE  `type` = 'url' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
     `is_forced` = '1' OR DATE_ADD(`last_harvested_at`,INTERVAL `harvest_frequency` DAY) = cDate) ;
 

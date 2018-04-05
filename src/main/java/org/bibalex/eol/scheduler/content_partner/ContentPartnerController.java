@@ -1,13 +1,15 @@
 package org.bibalex.eol.scheduler.content_partner;
 
 import org.apache.log4j.Logger;
+import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
+import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 
@@ -37,8 +39,8 @@ public class ContentPartnerController {
         partner.setAbbreviation(abbreviation);
         partner.setDescription(description);
         partner.setUrl(url);
-        partner.setLogo_path(logoPath);
-        partner.setLogo_type(contentPartnerService.getFileExtension(logoPath));
+        partner.setLogoPath(logoPath);
+        partner.setLogoType(contentPartnerService.getFileExtension(logoPath));
         logger.debug("Create content partner request -> "+ partner.toString());
         return () -> ResponseEntity.ok(contentPartnerService.createContentPartner(partner));
     }
@@ -69,15 +71,28 @@ public class ContentPartnerController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Callable<ResponseEntity<Collection<ContentPartner>>> getContentPartners(@RequestParam String ids){
+    public Callable<ResponseEntity<Collection<LightContentPartner>>> getContentPartners(@RequestParam String ids){
         logger.debug("Get content partners with ids: "+ids);
         return () -> ResponseEntity.ok(contentPartnerService.getContentPartners(ids));
     }
 
     @RequestMapping(value= "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ContentPartner> getContentPartner(@PathVariable long id){
+    public ResponseEntity<LightContentPartner> getContentPartner(@PathVariable long id){
         logger.debug("Content partner controller get partner with id: "+id);
         return ResponseEntity.ok(contentPartnerService.getContentPartner(id));
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "contentPartnerOfResource")
+    public Callable<ResponseEntity<LightContentPartner>> getContentPartnerOfResource(@RequestParam("resId") long resId){
+
+        logger.debug("Get content partner of resource (" + resId + ")");
+        return () ->  ResponseEntity.ok(contentPartnerService.getResourceCP(resId));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "contentPartnerWithResources/{id}")
+    public Callable<ResponseEntity<ContentPartner>> getFullContentPartner(@PathVariable long id){
+        logger.debug("Get content partners resources with ids: " + id);
+        return () -> ResponseEntity.ok(contentPartnerService.getFullContentPartner(id));
     }
 
 }
