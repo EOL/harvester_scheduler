@@ -96,10 +96,10 @@ public class Resource {
     private String defaultRightsHolder;
     @Column(name="default_language_id")
     private int defaultLanguageId = 152;
-    @Column(name="created_at")
-    private Date createdAt;
-    @Column(name="updated_at")
-    private Date updatedAt;
+//    @Column(name="created_at")
+//    private Date createdAt;
+//    @Column(name="updated_at")
+//    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn (name="content_partner_id")
@@ -223,13 +223,13 @@ public class Resource {
         return defaultLanguageId;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+//    public Date getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public Date getUpdatedAt() {
+//        return updatedAt;
+//    }
 
     public ContentPartner getContentPartner() {
         return contentPartner;
@@ -331,13 +331,13 @@ public class Resource {
         this.defaultLanguageId = defaultLanguageId;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+//    public void setCreatedAt(Date createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public void setUpdatedAt(Date updatedAt) {
+//        this.updatedAt = updatedAt;
+//    }
 
     public void setContentPartner(ContentPartner contentPartner) {
         this.contentPartner = contentPartner;
