@@ -10,13 +10,13 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 // java -jar target/Scheduler-1.0-SNAPSHOT.jar
 
 @SpringBootApplication
-//public class SchedulerAPI extends SpringBootServletInitializer {
-        public class SchedulerAPI {
-//
-//    @Override
-//    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//        return application.sources(SchedulerAPI.class);
-//    }
+public class SchedulerAPI extends SpringBootServletInitializer {
+//        public class SchedulerAPI {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SchedulerAPI.class);
+    }
 
     public static void main(String [] args){
         SpringApplication.run(SchedulerAPI.class, args);

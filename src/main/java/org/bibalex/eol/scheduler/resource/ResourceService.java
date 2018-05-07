@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -65,16 +66,16 @@ public class ResourceService {
         resourceRepository.findById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
     }
 
-    public boolean checkReadyResources(Date dt) {
+    public boolean checkReadyResources(Timestamp ts) {
         StoredProcedureQuery getResourcesQuery =
                 entityManager.createNamedStoredProcedureQuery("getHarvestedResources_sp");
 
         StoredProcedureQuery storedProcedure =
-                getResourcesQuery.setParameter("cDate", dt);
+                getResourcesQuery.setParameter("cDate", ts);
 
         BigInteger count = (BigInteger) storedProcedure.getSingleResult();
-        logger.debug("checkReadyResources count:"  + count.toString());
-        System.out.println("checkReadyResources" + count);
+        logger.debug("checkReadyResources count: "  + count.toString());
+        System.out.println("checkReadyResources: " + count);
         return (count.signum() == 1? true : false);
     }
 

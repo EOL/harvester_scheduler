@@ -64,4 +64,8 @@ public interface LightResource {
     public int getDefaultLanguageId();
 
 
+//    public static void main(String []args) {
+//        System.out.println(System.currentTimeMillis());
+//    }
+
 }

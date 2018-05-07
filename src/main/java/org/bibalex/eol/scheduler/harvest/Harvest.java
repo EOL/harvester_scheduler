@@ -91,6 +91,10 @@ public class Harvest {
 
     public static Harvest.State getHarvestStatus(String harvestStr) {
         switch (harvestStr) {
+            case "true":
+                return Harvest.State.succeed;
+            case "false":
+                return Harvest.State.failed;
             case "succeed":
                 return Harvest.State.succeed;
             case "failed":

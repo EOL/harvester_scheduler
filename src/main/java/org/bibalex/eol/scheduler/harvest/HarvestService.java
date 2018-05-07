@@ -113,7 +113,7 @@ public class HarvestService {
                 }
             };
 //        }, initialDelay , 300000L, TimeUnit.MILLISECONDS);  // delay 5 minutes
-        }, initialDelay , 40000L, TimeUnit.MILLISECONDS);  // delay 4 sec
+        }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 40 sec
 //    }, initialDelay , 86400000L, TimeUnit.MILLISECONDS);
     }
 

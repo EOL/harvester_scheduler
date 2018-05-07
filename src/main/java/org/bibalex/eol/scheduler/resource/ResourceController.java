@@ -8,6 +8,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -54,10 +56,18 @@ public class ResourceController {
         return () ->  ResponseEntity.ok(resourceService.getResource(resourceId));
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "resources")
-    public Callable<ResponseEntity<Boolean>> checkReadyResources(@RequestParam("fromDate") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date date){
+//    @RequestMapping(method = RequestMethod.POST, value = "resources")
+//    public Callable<ResponseEntity<Boolean>> checkReadyResources(@RequestParam("fromDate") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date date){
+//        logger.debug("Get ready harvested resources.");
+//        return () ->  ResponseEntity.ok(resourceService.checkReadyResources(date));
+//    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "readyResources/{fromDate}")
+    public Callable<ResponseEntity<Boolean>> checkReadyResources(@PathVariable("fromDate") String tsStr){
+        Timestamp ts = new java.sql.Timestamp(Long.parseLong(tsStr));
         logger.debug("Get ready harvested resources.");
-        return () ->  ResponseEntity.ok(resourceService.checkReadyResources(date));
+//        System.out.println("-------->"+ts);
+        return () ->  ResponseEntity.ok(resourceService.checkReadyResources(ts));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "resources")

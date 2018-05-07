@@ -5,6 +5,7 @@ import org.bibalex.eol.scheduler.content_partner.ContentPartner;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.hibernate.validator.constraints.Range;
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,7 +31,7 @@ import java.util.Set;
                 parameters = {
                         @StoredProcedureParameter(
                                 name = "cDate",
-                                type = Date.class,
+                                type = Timestamp.class,
                                 mode = ParameterMode.IN) })
 })
 
@@ -96,10 +97,10 @@ public class Resource {
     private String defaultRightsHolder;
     @Column(name="default_language_id")
     private int defaultLanguageId = 152;
-    @Column(name="created_at")
-    private Date createdAt;
-    @Column(name="updated_at")
-    private Date updatedAt;
+//    @Column(name="created_at")
+//    private Date createdAt;
+//    @Column(name="updated_at")
+//    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn (name="content_partner_id")
@@ -223,13 +224,13 @@ public class Resource {
         return defaultLanguageId;
     }
 
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
+//    public Date getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public Date getUpdatedAt() {
+//        return updatedAt;
+//    }
 
     public ContentPartner getContentPartner() {
         return contentPartner;
@@ -331,13 +332,13 @@ public class Resource {
         this.defaultLanguageId = defaultLanguageId;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+//    public void setCreatedAt(Date createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public void setUpdatedAt(Date updatedAt) {
+//        this.updatedAt = updatedAt;
+//    }
 
     public void setContentPartner(ContentPartner contentPartner) {
         this.contentPartner = contentPartner;

@@ -87,15 +87,15 @@ public class HarvesterClient {
                     new HttpEntity<LinkedMultiValueMap<String, Object>>(map, headers);
 
             logger.debug("Sending harvester request.");
-            ResponseEntity<String> response = restTemplate.exchange(
+            ResponseEntity<Boolean> response = restTemplate.exchange(
                     uri,
-                    HttpMethod.POST, requestEntity, String.class, params);
+                    HttpMethod.POST, requestEntity, Boolean.class, params);
 
             logger.debug("after exchange now ..");
             System.out.println("after exchange now ..");
             if (response.getStatusCode() == HttpStatus.OK) {
                 logger.debug("\nharvested resource (" + resId + ") successfully.");
-                return Harvest.getHarvestStatus(response.getBody());
+                return Harvest.getHarvestStatus(String.valueOf((Boolean)(response.getBody())));
             } else {
                 System.out.println("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: returned code(" + response.getStatusCode() + ")");
                 logger.error("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: returned code(" + response.getStatusCode() + ")");
