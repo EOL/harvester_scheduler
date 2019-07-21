@@ -1,7 +1,8 @@
 package org.bibalex.eol.scheduler.harvest;
 
+import org.apache.logging.log4j.LogManager;
 import org.bibalex.eol.scheduler.resource.*;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.utils.PropertiesFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class HarvestService {
 
-    private static final Logger logger = Logger.getLogger(HarvestService.class);
+    private static final Logger logger = LogManager.getLogger(HarvestService.class);
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     @PersistenceContext
     private EntityManager entityManager;
@@ -38,26 +39,28 @@ public class HarvestService {
 
     @PostConstruct
     private void init() {
-        System.out.println("starting init");
+//        System.out.println("starting init");
+        logger.debug("Calling");
         resourcePriorityQueue = new PriorityQueue<Resource>(new ResourcePositionComparator());
         HarvesterClient harvestClient = new HarvesterClient();
 //        harvestClient.setApp(app);
 
-        System.out.println("after creating priority queue");
+//        System.out.println("after creating priority queue");
+        logger.debug("After Creating Priority Queue");
         Date midnight = new Date();
         midnight.setHours(23);
         midnight.setMinutes(30);
         midnight.setSeconds(0);
 //        long initialDelay = new Date(midnight.getTime()-System.currentTimeMillis()).getTime();
 
-        System.out.println("before initial delay");
+        logger.debug("Before Initial Delay");
         long initialDelay = (10000); // on minute
 //        long initialDelay = (1 * 60  *60); // on minute
 
 //        // every time the scheduled task run fill the queue from the database
         executor.scheduleAtFixedRate(()->{
 
-            logger.debug("\nHarvestService get resources to be harvested from DB:");
+            logger.info("Getting Resources to Be Harvested from DB");
             StoredProcedureQuery findByYearProcedure =
                     entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
 
@@ -65,8 +68,7 @@ public class HarvestService {
             StoredProcedureQuery storedProcedure =
                     findByYearProcedure.setParameter("cDate", dt);
 
-            logger.debug("Resources count to be harvested" + storedProcedure.getResultList().size());
-            System.out.println("--->" + storedProcedure.getResultList().size());
+            logger.info("Number of Resources to Be Harvested: " + storedProcedure.getResultList().size());
             storedProcedure.getResultList()
                     .forEach(resource -> {
                         Resource res = (Resource)resource;
@@ -75,17 +77,17 @@ public class HarvestService {
 
             while(!resourcePriorityQueue.isEmpty()) {
                 Resource resource = resourcePriorityQueue.poll();
-                System.out.println("Harvesting resource:" + resource.getId());
-                logger.debug("\nHarvesting resource:" + resource.getId());
+//                System.out.println("Harvesting resource:" + resource.getId());
+                logger.info("Harvesting Resource: " + resource.getId());
                 Date startDate = new Date();
                 try{
-                    logger.debug("Going into harvesting:");
-                    System.out.println("Going into harvesting:");
+                    logger.debug("Going into Harvesting:");
+//                    System.out.println("Going into harvesting:");
                     resource.setHarvestInprogress(true);
                     Harvest.State status = harvestClient.harvestResource(resource.getId() + "");
 
-                    System.out.println("Harvesting status:" + status);
-                    logger.debug("\nHarvesting status:" + status);
+//                    System.out.println("Harvesting status:" + status);
+                    logger.info("Harvest Status: " + status);
                     Date endDate = new Date();
                     resource.setForcedInternally(false);
                     resource.setLastHarvestedAt(endDate);
@@ -99,16 +101,17 @@ public class HarvestService {
 
 
                     long harvId = harvestRepository.save(harvest).getId();
-                    System.out.println("Got new harvest id:" + harvId);
-                    logger.debug("Got new harvest id:" + harvId);
+//                    System.out.println("Got new harvest id:" + harvId);
+                    logger.debug("New Harvest ID: " + harvId);
 
 
                     long resId = resourceRepository.save(resource).getId();
-                    System.out.println("Harvested resource:" + resId);
-                    logger.debug("Harvested resource:" + resId);
+//                    System.out.println("Harvested resource:" + resId);
+                    logger.info("Harvested Resource: " + resId);
                 } catch (Exception e) {
-                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
-                    logger.debug("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+//                    System.out.println("org.bibalex.eol.scheduler.harvest.init: Harvest thread error: harvesteing resource:" + resource.getId() + "-->" + e.getMessage());
+                    logger.error("Exception: Error while Harvesting Resource" + resource.getId());
+                    logger.error("Stack Trace: ", e);
                     e.printStackTrace();
                 }
             };
@@ -125,14 +128,14 @@ public class HarvestService {
             executor.awaitTermination(5, TimeUnit.SECONDS);
         }
         catch (InterruptedException e) {
-            logger.error("executor tasks interrupted");
+            logger.error("InterruptedException: Executor Tasks Interrupted");
         }
         finally {
             if (!executor.isTerminated()) {
-                logger.error("cancel non-finished executor tasks");
+                logger.error("Cancel Unfinished Executor Tasks");
             }
             executor.shutdownNow();
-            logger.error("executor shutdown finished");
+            logger.error("Executor Shutdown Finished");
         }
 
     }

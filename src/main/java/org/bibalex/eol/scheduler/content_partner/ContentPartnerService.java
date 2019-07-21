@@ -1,8 +1,9 @@
 package org.bibalex.eol.scheduler.content_partner;
 
+import org.apache.logging.log4j.LogManager;
 import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.resource.Resource;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,30 +20,30 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContentPartnerService {
-    private static final Logger logger = Logger.getLogger(ContentPartnerService.class);
+    private static final Logger logger = LogManager.getLogger(ContentPartnerService.class);
     @Autowired
     private ContentPartnerRepository contentPartnerRepository;
 
     public long createContentPartner(ContentPartner partner, String logoPath) throws SQLException{
-            logger.debug("Content partner Service create new ");
+            logger.info("Calling");
             partner.setLogoPath(logoPath);
             partner.setLogoType(getFileExtension(logoPath));
             return contentPartnerRepository.save(partner).getId();
     }
     public long createContentPartner(ContentPartner partner){
-        logger.debug("Content partner Service create new ");
+        logger.info("Calling");
         return contentPartnerRepository.save(partner).getId();
     }
 
     public ContentPartner updateContentPartner(long id, ContentPartner partner){
-        logger.debug("Content partner Service update id "+id);
+        logger.info("Content Partner ID: "+id);
         validateContentPartner(id);
         partner.setId(id);
         return contentPartnerRepository.save(partner);
     }
 
     public ContentPartner updateContentPartner(long id, ContentPartner partner, String logoPath) throws SQLException {
-        logger.debug("Content partner Service update id "+id);
+        logger.info("Content Partner ID: "+id);
         validateContentPartner(id);
         partner.setLogoPath(logoPath);
         partner.setLogoType
@@ -58,7 +59,7 @@ public class ContentPartnerService {
     }
 
     public Collection<LightContentPartner> getContentPartners(String partnerIds){
-        logger.debug("Content partner service: get content partners with ids : "+partnerIds);
+        logger.info("Content Partner IDs: "+partnerIds);
         if (partnerIds == null || partnerIds != null && partnerIds.length() == 0)
             throw  new NotFoundException("content partner", partnerIds);
         return contentPartnerRepository.findByIdIn(Arrays.asList(partnerIds.split("\\s*,\\s*")).stream().map(Long::valueOf).collect(Collectors.toList())).orElseThrow(
@@ -103,4 +104,7 @@ public class ContentPartnerService {
          return "";
     }
 
+    public Long getContentPartnerCount() {
+        return contentPartnerRepository.count();
+    }
 }

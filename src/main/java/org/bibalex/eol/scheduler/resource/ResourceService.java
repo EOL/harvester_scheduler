@@ -74,21 +74,26 @@ public class ResourceService {
                 getResourcesQuery.setParameter("cDate", ts);
 
         BigInteger count = (BigInteger) storedProcedure.getSingleResult();
-        logger.debug("checkReadyResources count: "  + count.toString());
-        System.out.println("checkReadyResources: " + count);
+        logger.debug("Number of Ready Resources: "  + count.toString());
+//        System.out.println("checkReadyResources: " + count);
         return (count.signum() == 1? true : false);
     }
 
     public Collection<LightResource> getResources(String resourcesIds){
         logger.debug("Resources service: get resources with ids : " + resourcesIds);
-        if (resourcesIds == null || resourcesIds != null && resourcesIds.length() == 0)
-            throw new NotFoundException("resources ", resourcesIds);
+        if (resourcesIds == null || resourcesIds != null && resourcesIds.length() == 0){
+            logger.error("Exception: Resources not Found");
+            throw new NotFoundException("resources ", resourcesIds);}
         return resourceRepository.findByIdIn(Arrays.asList(resourcesIds.split("\\s*,\\s*")).stream().map(Long::valueOf).collect(Collectors.toList())).orElseThrow(
                 () -> new NotFoundException("resources", resourcesIds));
     }
 
     public LightResource getLightResource(long id){
         return resourceRepository.findById(id).orElseThrow(() -> new NotFoundException("resource", 1));
+    }
+
+    public Long getResourceCount() {
+        return resourceRepository.count();
     }
 
 //    public Resource getResourceWithCP(long resourceId){

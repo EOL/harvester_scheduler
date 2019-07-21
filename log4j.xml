@@ -3,9 +3,10 @@
     <Appenders>
         <Console name="ConsoleOut" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <JsonLayout compact="true" eventEol="true"/>
             <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
         </Console>
-        <RollingFile name="RollingFile" fileName="logs/app.log"
+        <RollingFile name="RollingFile" fileName="logs/scheduler.log"
                      filePattern="logs/app-%i.log.gz">
             <PatternLayout>
                 <pattern>%d %p %c{1.} [%t] %m%n</pattern>

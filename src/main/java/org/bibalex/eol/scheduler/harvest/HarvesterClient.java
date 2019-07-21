@@ -8,7 +8,8 @@ package org.bibalex.eol.scheduler.harvest;
 //import org.apache.http.impl.client.CloseableHttpClient;
 //import org.apache.http.impl.client.HttpClientBuilder;
 //import org.apache.http.impl.client.ProxyAuthenticationStrategy;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 //import org.bibalex.eol.scheduler.utils.PropertiesFile;
 //import org.springframework.http.*;
 //import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -44,7 +45,7 @@ import java.util.Properties;
  */
 public class HarvesterClient {
 
-    private static final Logger logger = Logger.getLogger(HarvesterClient.class);
+    private static final Logger logger = LogManager.getLogger(HarvesterClient.class);
 //    private PropertiesFile app;
 
 //    public void setApp(PropertiesFile app) {
@@ -53,8 +54,8 @@ public class HarvesterClient {
 
     public Harvest.State harvestResource(String resId) {
         try {
-            logger.debug("\nDownloading resource into harvester: " + resId);
-            System.out.println("\nDownloading resource into harvester: " + resId);
+            logger.info("Downloading Resource: " + resId +" into Harvester");
+//            System.out.println("\nDownloading resource into harvester: " + resId);
 
             Properties prop = new Properties();
             InputStream input = HarvesterClient.class.getClassLoader().getResourceAsStream("application.properties");
@@ -62,19 +63,20 @@ public class HarvesterClient {
                 prop.load(input);
 
             } catch (IOException e) {
-                System.out.println("org.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during loading properties files.");
-                logger.error("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during loading properties files.");
+//                System.out.println("org.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during loading properties files.");
+                logger.error("IOException: Error during loading properties files.");
+                logger.error("Stack Trace: ", e);
                 return Harvest.State.failed;
             }
             String uri = prop.getProperty("harvester");
-            logger.debug("\ncreating msg converter");
-            System.out.println("\ncreating msg converter");
+            logger.debug("Creating Message Converter");
+//            System.out.println("\ncreating msg converter");
             RestTemplate restTemplate = new RestTemplate();
             restTemplate.getMessageConverters().add(
                     new ByteArrayHttpMessageConverter());
 
-            logger.debug("\ncreating params");
-            System.out.println("\ncreating params");
+            logger.debug("Creating Parameters");
+//            System.out.println("\ncreating params");
 
             Map<String, String> params = new HashMap<String, String>();
             params.put(prop.getProperty("resourceId"), resId);
@@ -86,24 +88,25 @@ public class HarvesterClient {
             HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
                     new HttpEntity<LinkedMultiValueMap<String, Object>>(map, headers);
 
-            logger.debug("Sending harvester request.");
+            logger.debug("Sending Harvester Request");
             ResponseEntity<Boolean> response = restTemplate.exchange(
                     uri,
                     HttpMethod.POST, requestEntity, Boolean.class, params);
 
-            logger.debug("after exchange now ..");
-            System.out.println("after exchange now ..");
+            logger.debug("Getting HTTP Response");
+//            System.out.println("after exchange now ..");
             if (response.getStatusCode() == HttpStatus.OK) {
-                logger.debug("\nharvested resource (" + resId + ") successfully.");
+                logger.debug("Resource: " + resId + "- Harvested Successfully");
                 return Harvest.getHarvestStatus(String.valueOf((Boolean)(response.getBody())));
             } else {
-                System.out.println("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: returned code(" + response.getStatusCode() + ")");
-                logger.error("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: returned code(" + response.getStatusCode() + ")");
+                logger.error("Failed to Harvest Resource: " + resId);
+                logger.error("Status Code: " + response.getStatusCode());
                 return Harvest.State.failed;
             }
         } catch(Exception ex) {
-            logger.error("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during harvesting");
-            System.out.println("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during harvesting");
+            logger.error("Exception: Error during Harvesting");
+            logger.error("Stack Trace: ", ex);
+//            System.out.println("\norg.bibalex.eol.scheduler.harvest.HarvesterClient.harvestResource: Error during harvesting");
             return Harvest.State.failed;
 
         }
