@@ -1,18 +1,22 @@
 package org.bibalex.eol.scheduler.resource;
 
+import jdk.nashorn.internal.runtime.JSONFunctions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.Entity;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -26,30 +30,31 @@ public class ResourceController {
     private ResourceService resourceService;
 
     @RequestMapping(method = RequestMethod.POST, value = "{contentPartnerId}/resources")
-    public Callable<ResponseEntity<?>> createResource(@PathVariable long contentPartnerId, @RequestBody Resource resource){
-        logger.info("Content Partner ID: "+contentPartnerId);
+    public Callable<ResponseEntity<?>> createResource(@PathVariable long contentPartnerId, @RequestBody Resource resource) {
+        logger.info("Content Partner ID: " + contentPartnerId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.createResource(contentPartnerId, resource));
         logger.info("Response: " + responseEntity);
         return () -> responseEntity;
     }
+
     @RequestMapping(method = RequestMethod.POST, value = "{contentPartnerId}/resources/{resourceId}")
-    public Callable<ResponseEntity<Resource>> updateResource(@PathVariable long contentPartnerId, @PathVariable long resourceId, @RequestBody Resource resource){
-        logger.info("Resource ID: "+resourceId );
+    public Callable<ResponseEntity<Resource>> updateResource(@PathVariable long contentPartnerId, @PathVariable long resourceId, @RequestBody Resource resource) {
+        logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.updateResource(contentPartnerId, resourceId, resource));
         logger.info("Response: " + responseEntity);
-        return () ->  responseEntity;
+        return () -> responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{contentPartnerId}/resources/{resourceId}")
-    public Callable<ResponseEntity<LightResource>> getResource(@PathVariable long resourceId){
-        logger.info("Resource ID: "+resourceId );
+    public Callable<ResponseEntity<LightResource>> getResource(@PathVariable long resourceId) {
+        logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResource(resourceId));
         logger.info("Response: " + responseEntity);
-        return () ->  responseEntity;
+        return () -> responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "{contentPartnerId}/resources")
-    public ResponseEntity<Collection<LightResource>> getResources(@PathVariable long contentPartnerId){
+    public ResponseEntity<Collection<LightResource>> getResources(@PathVariable long contentPartnerId) {
         List<LightResource> resources = resourceService.getResources(contentPartnerId);
         logger.info("Content Partner ID: " + contentPartnerId);
         HttpStatus status = HttpStatus.OK;
@@ -60,11 +65,11 @@ public class ResourceController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceId}")
-    public Callable<ResponseEntity<LightResource>> getResourceWithoutCP(@PathVariable long resourceId){
-        logger.info("Resource ID: "+resourceId );
+    public Callable<ResponseEntity<LightResource>> getResourceWithoutCP(@PathVariable long resourceId) {
+        logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResource(resourceId));
         logger.info("Response: " + responseEntity);
-        return () ->  responseEntity;
+        return () -> responseEntity;
     }
 
 //    @RequestMapping(method = RequestMethod.POST, value = "resources")
@@ -74,32 +79,45 @@ public class ResourceController {
 //    }
 
     @RequestMapping(method = RequestMethod.GET, value = "readyResources/{fromDate}")
-    public Callable<ResponseEntity<Boolean>> checkReadyResources(@PathVariable("fromDate") String tsStr){
+    public Callable<ResponseEntity<Boolean>> checkReadyResources(@PathVariable("fromDate") String tsStr) {
         Timestamp ts = new java.sql.Timestamp(Long.parseLong(tsStr));
         logger.info("Timestamp: " + ts);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.checkReadyResources(ts));
 //        System.out.println("-------->"+ts);
         logger.info("Response: " + responseEntity);
-        return () ->  responseEntity;
+        return () -> responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "resources")
-    public Callable<ResponseEntity<Collection<LightResource>>> getResources(@RequestParam("ids") String ids){
-        logger.info("Resource IDs: "+ids);
+    public Callable<ResponseEntity<Collection<LightResource>>> getResources(@RequestParam("ids") String ids) {
+        logger.info("Resource IDs: " + ids);
         return () -> ResponseEntity.ok(resourceService.getResources(ids));
     }
 
-//    @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceId}/contentPartner")
+    //    @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceId}/contentPartner")
 //    public Callable<ResponseEntity<Resource>> getResourceWithCP(@PathVariable long resourceId){
 //        logger.debug("Get resource of id "+resourceId );
 //        return () ->  ResponseEntity.ok(resourceService.getResourceWithCP(resourceId));
 //    }
-@RequestMapping(method = RequestMethod.GET, value = "resources/count")
-public Callable<ResponseEntity<Long>> getResourceCount() {
-        ResponseEntity responseEntity= ResponseEntity.ok(resourceService.getResourceCount());
-    logger.info("Resource Count: " + responseEntity);
+    @RequestMapping(method = RequestMethod.GET, value = "resources/count")
+    public Callable<ResponseEntity<Long>> getResourceCount() {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceCount());
+        logger.info("Resource Count: " + responseEntity);
 //    System.out.println("Get Resource Count");
-    return () -> responseEntity;
-}
+        return () -> responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData() {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData());
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID));
+        return responseEntity;
+    }
+
 }
 

@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import java.awt.print.Pageable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +20,8 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 //            @Query("SELECT r FROM ContentPartner p JOIN p.resources r where  r.id= ?1")
 //    public Optional<Resource> findByIdWithCP(long id);
     public Optional<List<LightResource>> findByIdIn(List<Long> ids);
+
+    @Query(value = "select r.id from Resource r")
+//    List<Resource> findAllResourceIDs();
+    ArrayList<Long> findAllResourceIDs();
 }
