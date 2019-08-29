@@ -21,7 +21,7 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
 //    public Optional<Resource> findByIdWithCP(long id);
     public Optional<List<LightResource>> findByIdIn(List<Long> ids);
 
-    @Query(value = "select r.id from Resource r")
-//    List<Resource> findAllResourceIDs();
-    ArrayList<Long> findAllResourceIDs();
+//    @Query(value = "select r.id from Resource r")
+////    List<Resource> findAllResourceIDs();
+//    ArrayList<Long> findAllResourceIDs();
 }

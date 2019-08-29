@@ -8,14 +8,12 @@ import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.bibalex.eol.scheduler.harvest.HarvestRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.StoredProcedureQuery;
-import java.awt.print.Pageable;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.*;
@@ -107,57 +105,66 @@ public class ResourceService {
         //Resource Data: Resource ID, Resource Name, Content Partner ID, Content Partner Name, Last Harvest Status
 
         ArrayList<HashMap<String, String>> resources = new ArrayList<>();
-
-        for (Long res : resourceRepository.findAllResourceIDs()) {
-
+        List<Resource> resourceList = resourceRepository.findAll();
+        for (Resource res: resourceList)
+        {
             HashMap<String, String> resourceMap = new HashMap();
-            LightResource resource = getResource(res);
-            String resourceName = resource.getName();
-            LightContentPartner lightContentPartner = contentPartnerService.getResourceCP(res);
-            String contentPartnerID = String.valueOf(lightContentPartner.getId());
-            String contentPartnerName = lightContentPartner.getName();
-            List<Harvest> harvest = harvestRepository.findByResourceId(res);
-//            String lastHarvestStatus = String.valueOf(harvest.get(harvest.size() - 1).getState());
-            String lastHarvestStatus = getLastHarvest(res).get("status");
 
-            resourceMap.put("resourceID", res.toString());
-            resourceMap.put("resourceName", resourceName);
-            resourceMap.put("contentPartnerID", contentPartnerID);
-            resourceMap.put("contentPartnerName", contentPartnerName);
-            resourceMap.put("lastHarvestStatus", lastHarvestStatus);
+            resourceMap.put("resourceID", res.getId().toString());
+            resourceMap.put("resourceName", res.getName());
+            resourceMap.put("contentPartnerID", String.valueOf(res.getContentPartner().getId()));
+            resourceMap.put("contentPartnerName", res.getContentPartner().getName());
+            resourceMap.put("lastHarvestStatus", getLastHarvest(res.getId()).get("status"));
 
             resources.add(resourceMap);
 
         }
-
         return resources;
 
     }
 
-    public ArrayList<HashMap<String, String>> getHarvestHistory(Long resourceID) {
+    public HashMap<String, String> getHarvestHistory(Long resourceID) {
 
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
         ArrayList<HashMap<String, String>> harvestHistory = new ArrayList<>();
+        HashMap<String, String> resourceHarvestHistory = new HashMap();
+        if (!harvest.isEmpty()) {
+            for (Harvest harv : harvest) {
 
-        for (Harvest harv : harvest) {
+                HashMap<String, String> harvestMap = new HashMap<>();
+                harvestMap.put("harvest_id", String.valueOf(harv.getId()));
+                harvestMap.put("startTime", String.valueOf(harv.getStart_at()));
+                harvestMap.put("endTime", String.valueOf(harv.getCompleted_at()));
+                harvestMap.put("status", String.valueOf(harv.getState()));
+                harvestHistory.add(harvestMap);
+            }
+            Resource resource = harvest.get(0).getResource();
+            String resourceName = resource.getName(),
+                    contentPartnerId = String.valueOf(resource.getContentPartner().getId());
+            resourceHarvestHistory.put("resourceName", resourceName);
+            resourceHarvestHistory.put("contentPartnerId", contentPartnerId);
+            resourceHarvestHistory.put("harvestHistory", String.valueOf(harvestHistory));
 
-            HashMap<String, String> harvestMap = new HashMap<>();
-            harvestMap.put("harvest_id", String.valueOf(harv.getId()));
-            harvestMap.put("startTime", String.valueOf(harv.getStart_at()));
-            harvestMap.put("endTime", String.valueOf(harv.getCompleted_at()));
-            harvestMap.put("status", String.valueOf(harv.getState()));
-            harvestMap.put("resourceName", harv.getResource().getName());
-            harvestMap.put("contentPartnerID", String.valueOf(harv.getResource().getContentPartner().getId()));
-
-            harvestHistory.add(harvestMap);
         }
-
-        return harvestHistory;
+        return resourceHarvestHistory;
     }
 
-    public HashMap<String, String> getLastHarvest(Long resourceID){
-        ArrayList<HashMap<String, String>> harvestHistory = getHarvestHistory(resourceID);
-        return harvestHistory.get(harvestHistory.size()-1);
+    public HashMap<String, String> getLastHarvest(Long resourceID) {
+        List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
+        HashMap<String, String> lastHarvest = new HashMap();
+        if (!harvest.isEmpty()) {
+            Harvest harv = harvest.get(harvest.size()-1);
+            Resource resource = harv.getResource();
+            String resourceName = resource.getName(),
+                    contentPartnerId = String.valueOf(resource.getContentPartner().getId());
+            lastHarvest.put("resourceName", resourceName);
+            lastHarvest.put("contentPartnerId", contentPartnerId);
+            lastHarvest.put("harvest_id", String.valueOf(harv.getId()));
+            lastHarvest.put("startTime", String.valueOf(harv.getStart_at()));
+            lastHarvest.put("endTime", String.valueOf(harv.getCompleted_at()));
+            lastHarvest.put("status", String.valueOf(harv.getState()));
+        }
+        return lastHarvest;
     }
 
 }
