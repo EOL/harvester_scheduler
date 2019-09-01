@@ -9,6 +9,9 @@ import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.bibalex.eol.scheduler.harvest.HarvestRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -100,14 +103,16 @@ public class ResourceService {
         return resourceRepository.count();
     }
 
-    public ArrayList<HashMap<String, String>> getAllResourcesWithFullData() {
+    public ArrayList<HashMap<String, String>> getAllResourcesWithFullData(Long startResourceID, Long endResourceID) {
 
         //Resource Data: Resource ID, Resource Name, Content Partner ID, Content Partner Name, Last Harvest Status
 
         ArrayList<HashMap<String, String>> resources = new ArrayList<>();
-        List<Resource> resourceList = resourceRepository.findAll();
-        for (Resource res: resourceList)
+
+        while(startResourceID <= endResourceID)
         {
+            Resource res = resourceRepository.findResourceById(startResourceID);
+            if (res != null){
             HashMap<String, String> resourceMap = new HashMap();
 
             resourceMap.put("resourceID", res.getId().toString());
@@ -117,33 +122,39 @@ public class ResourceService {
             resourceMap.put("lastHarvestStatus", getLastHarvest(res.getId()).get("status"));
 
             resources.add(resourceMap);
-
+            }
+            startResourceID ++;
         }
-        return resources;
 
+        return resources;
     }
 
     public HashMap<String, String> getHarvestHistory(Long resourceID) {
 
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
-        ArrayList<HashMap<String, String>> harvestHistory = new ArrayList<>();
+
         HashMap<String, String> resourceHarvestHistory = new HashMap();
+        String harvestMap = "[";
+        int i = harvest.size();
         if (!harvest.isEmpty()) {
             for (Harvest harv : harvest) {
 
-                HashMap<String, String> harvestMap = new HashMap<>();
-                harvestMap.put("harvest_id", String.valueOf(harv.getId()));
-                harvestMap.put("startTime", String.valueOf(harv.getStart_at()));
-                harvestMap.put("endTime", String.valueOf(harv.getCompleted_at()));
-                harvestMap.put("status", String.valueOf(harv.getState()));
-                harvestHistory.add(harvestMap);
+                harvestMap += "{\"harvest_id\" : \"" + String.valueOf(harv.getId()) +
+                "\" ,\"startTime\" : \"" + String.valueOf(harv.getStart_at()) +
+                "\" ,\"endTime\" : \"" + String.valueOf(harv.getCompleted_at()) +
+                "\" ,\"status\" : \"" + String.valueOf(harv.getState()) + "\"}";
+                i--;
+                if (i > 0)
+                    harvestMap += ",";
             }
+            harvestMap += "]";
             Resource resource = harvest.get(0).getResource();
             String resourceName = resource.getName(),
                     contentPartnerId = String.valueOf(resource.getContentPartner().getId());
+
             resourceHarvestHistory.put("resourceName", resourceName);
             resourceHarvestHistory.put("contentPartnerId", contentPartnerId);
-            resourceHarvestHistory.put("harvestHistory", String.valueOf(harvestHistory));
+            resourceHarvestHistory.put("harvestHistory", harvestMap);
 
         }
         return resourceHarvestHistory;
@@ -167,4 +178,14 @@ public class ResourceService {
         return lastHarvest;
     }
 
+
+    public HashMap<String, Long> getResourceBoundaries() {
+        List<Resource> resources = resourceRepository.findAll();
+        Long firstID = resources.get(0).getId(),
+                lastID = resources.get(resources.size()-1).getId();
+        HashMap<String, Long> resourceLimitIDs = new HashMap<>();
+        resourceLimitIDs.put("firstResourceId", firstID);
+        resourceLimitIDs.put("lastResourceId", lastID);
+        return resourceLimitIDs;
+    }
 }

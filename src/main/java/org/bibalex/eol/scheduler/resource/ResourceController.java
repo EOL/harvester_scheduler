@@ -1,18 +1,13 @@
 package org.bibalex.eol.scheduler.resource;
 
-import jdk.nashorn.internal.runtime.JSONFunctions;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.Entity;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -107,17 +102,23 @@ public class ResourceController {
         return () -> responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData", produces = "application/json")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData() {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData());
-        return responseEntity;
-    }
-
     @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID));
         return responseEntity;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
+                                                                                          @PathVariable("endResourceID") Long endResourceID ) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
+    public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
+        return responseEntity;
+    }
 }
 
