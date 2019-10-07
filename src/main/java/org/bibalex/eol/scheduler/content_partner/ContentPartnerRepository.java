@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface ContentPartnerRepository extends CrudRepository<ContentPartner, Long> {
     Optional<ContentPartner> findById(long id);
     Optional<List<ContentPartner>> findByIdIn(List<Long> ids);
+    ContentPartner findContentPartnerById(long id);
 
 }
 

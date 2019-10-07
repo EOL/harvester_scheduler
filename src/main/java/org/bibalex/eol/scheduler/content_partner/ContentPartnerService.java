@@ -7,10 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -85,4 +82,34 @@ public class ContentPartnerService {
          return "";
     }
 
+    public ArrayList<HashMap<String, String>> getAllCPsWithFullData(Long startCPID, Long endCPID) {
+
+        ArrayList<HashMap<String, String>> contentPartners = new ArrayList<>();
+
+        while(startCPID <= endCPID)
+        {
+            ContentPartner contentPartner = contentPartnerRepository.findContentPartnerById(startCPID);
+            if (contentPartner != null){
+                HashMap<String, String> contentPartnersMap = new HashMap();
+
+                contentPartnersMap.put("contentPartnerID", String.valueOf(contentPartner.getId()));
+                contentPartnersMap.put("contentPartnerName", contentPartner.getName());
+
+                contentPartners.add(contentPartnersMap);
+            }
+            startCPID ++;
+        }
+
+        return contentPartners;
+    }
+
+    public HashMap<String, Long> getCPBoundaries() {
+        List<ContentPartner> contentPartners = (List<ContentPartner>) contentPartnerRepository.findAll();
+        Long firstID = contentPartners.get(0).getId(),
+                lastID = contentPartners.get(contentPartners.size()-1).getId();
+        HashMap<String, Long> contentPartnerLimitIDs = new HashMap<>();
+        contentPartnerLimitIDs.put("firstContentPartnerId", firstID);
+        contentPartnerLimitIDs.put("lastContentPartnerId", lastID);
+        return contentPartnerLimitIDs;
+    }
 }

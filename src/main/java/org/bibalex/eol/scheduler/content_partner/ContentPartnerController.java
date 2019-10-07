@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 
@@ -78,6 +80,19 @@ public class ContentPartnerController {
     public ResponseEntity<ContentPartner> getContentPartner(@PathVariable long id){
         logger.debug("Content partner controller get partner with id: "+id);
         return ResponseEntity.ok(contentPartnerService.getContentPartner(id));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getAllCPsWithFullData/{startCPID}/{endCPID}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllCPsWithFullData(@PathVariable("startCPID") Long startCPID,
+                                                                                          @PathVariable("endCPID") Long endCPID ) {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(startCPID, endCPID));
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getCPBoundaries")
+    public ResponseEntity<HashMap<String, Long>> getCPBoundaries() {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getCPBoundaries());
+        return responseEntity;
     }
 
 }
