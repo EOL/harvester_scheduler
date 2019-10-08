@@ -1,7 +1,10 @@
 package org.bibalex.eol.scheduler.content_partner;
 
+import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.apache.log4j.Logger;
+import org.bibalex.eol.scheduler.resource.Resource;
+import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +22,8 @@ public class ContentPartnerService {
 
     public long createContentPartner(ContentPartner partner, String logoPath) throws SQLException{
             logger.debug("Content partner Service create new ");
-            partner.setLogo_path(logoPath);
-            partner.setLogo_type(getFileExtension(logoPath));
+            partner.setLogoPath(logoPath);
+            partner.setLogoType(getFileExtension(logoPath));
             return contentPartnerRepository.save(partner).getId();
     }
     public long createContentPartner(ContentPartner partner){
@@ -38,8 +41,9 @@ public class ContentPartnerService {
     public ContentPartner updateContentPartner(long id, ContentPartner partner, String logoPath) throws SQLException {
         logger.debug("Content partner Service update id "+id);
         validateContentPartner(id);
-        partner.setLogo_path(logoPath);
-        partner.setLogo_type(getFileExtension(logoPath));
+        partner.setLogoPath(logoPath);
+        partner.setLogoType
+                (getFileExtension(logoPath));
         partner.setId(id);
         return contentPartnerRepository.save(partner);
    }
@@ -50,7 +54,7 @@ public class ContentPartnerService {
         return partners;
     }
 
-    public Collection<ContentPartner> getContentPartners(String partnerIds){
+    public Collection<LightContentPartner> getContentPartners(String partnerIds){
         logger.debug("Content partner service: get content partners with ids : "+partnerIds);
         if (partnerIds == null || partnerIds != null && partnerIds.length() == 0)
             throw  new NotFoundException("content partner", partnerIds);
@@ -58,7 +62,7 @@ public class ContentPartnerService {
                 () -> new NotFoundException("content partner", partnerIds));
     }
 
-    public ContentPartner getContentPartner(long id){
+    public LightContentPartner getContentPartner(long id){
         return contentPartnerRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("content partner", id));
     }
@@ -66,6 +70,20 @@ public class ContentPartnerService {
     public void validateContentPartner(long partnerId) {
         contentPartnerRepository.findById(partnerId).orElseThrow(
                 () -> new NotFoundException("content partner", partnerId));
+    }
+
+    public LightContentPartner getResourceCP(long resId) {
+        Resource resource = new Resource();
+        resource.setId(resId);
+        List<Resource> list = new ArrayList<Resource>();
+        list.add(resource);
+        return contentPartnerRepository.findByResources(list).orElseThrow(
+                () -> new NotFoundException("content partner", resId));
+    }
+
+    public ContentPartner getFullContentPartner(long id) {
+        return contentPartnerRepository.findFullContentPartnerById(id).orElseThrow(
+                () -> new NotFoundException("content partner", id));
     }
 
     String getFileExtension(String filePath) {
@@ -111,5 +129,9 @@ public class ContentPartnerService {
         contentPartnerLimitIDs.put("firstContentPartnerId", firstID);
         contentPartnerLimitIDs.put("lastContentPartnerId", lastID);
         return contentPartnerLimitIDs;
+    }
+
+    public Long getContentPartnerCount() {
+        return contentPartnerRepository.count();
     }
 }

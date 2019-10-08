@@ -35,13 +35,13 @@
         <!--</dependency>-->
 
 
-        <dependency>
-            <groupId>org.eol.harvester</groupId>
-            <artifactId>harvester</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>/home/hduser/eol/workspace/Harvester_Java/target/harvester-1.0-SNAPSHOT.jar</systemPath>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.eol.harvester</groupId>-->
+            <!--<artifactId>harvester</artifactId>-->
+            <!--<version>1.0-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>/home/hduser/eol/workspace/Harvester_Java/target/harvester-1.0-SNAPSHOT.jar</systemPath>-->
+        <!--</dependency>-->
 
 
         <!-- https://mvnrepository.com/artifact/org.webjars/google-diff-match-patch -->

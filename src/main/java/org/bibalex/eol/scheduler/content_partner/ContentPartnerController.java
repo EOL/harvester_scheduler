@@ -1,8 +1,9 @@
 package org.bibalex.eol.scheduler.content_partner;
 
 import org.apache.log4j.Logger;
+import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
+import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
@@ -20,16 +21,16 @@ public class ContentPartnerController {
     @Autowired
     private ContentPartnerService contentPartnerService;
 
-    @RequestMapping( method = RequestMethod.POST, params = "partner")
+    @RequestMapping(method = RequestMethod.POST, params = "partner")
     @ResponseBody
     public Callable<ResponseEntity<?>> createContentPartner(@RequestPart ContentPartner partner) throws IOException, SQLException {
-        logger.debug("Create content partner request ->"+ partner.toString());
+        logger.debug("Create content partner request ->" + partner.toString());
 
         return () -> ResponseEntity.ok(contentPartnerService.createContentPartner(partner));
     }
 
 
-    @RequestMapping( method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Callable<ResponseEntity<?>> createContentPartner(@RequestPart(required = false) String logoPath, @RequestPart String name, @RequestPart(required = false) String abbreviation,
                                                             @RequestPart String description, @RequestPart(required = false) String url)
@@ -39,15 +40,15 @@ public class ContentPartnerController {
         partner.setAbbreviation(abbreviation);
         partner.setDescription(description);
         partner.setUrl(url);
-        partner.setLogo_path(logoPath);
-        partner.setLogo_type(contentPartnerService.getFileExtension(logoPath));
-        logger.debug("Create content partner request -> "+ partner.toString());
+        partner.setLogoPath(logoPath);
+        partner.setLogoType(contentPartnerService.getFileExtension(logoPath));
+        logger.debug("Create content partner request -> " + partner.toString());
         return () -> ResponseEntity.ok(contentPartnerService.createContentPartner(partner));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST, params = "partner")
     public Callable<ResponseEntity<?>> updateContentPartner(@PathVariable long id, @RequestPart(required = false) String logoPath, @RequestPart ContentPartner partner) throws IOException, SQLException {
-        logger.debug("Update content partner id: "+id +" with vals ->"+ partner.toString());
+        logger.debug("Update content partner id: " + id + " with vals ->" + partner.toString());
         if (logoPath != null) {
             return () -> ResponseEntity.ok(contentPartnerService.updateContentPartner(id, partner, logoPath));
         } else
@@ -63,7 +64,7 @@ public class ContentPartnerController {
         partner.setAbbreviation(abbreviation);
         partner.setDescription(description);
         partner.setUrl(url);
-        logger.debug("Update content partner id: "+id +" with vals ->"+ partner.toString());
+        logger.debug("Update content partner id: " + id + " with vals ->" + partner.toString());
         if (logoPath != null) {
             return () -> ResponseEntity.ok(contentPartnerService.updateContentPartner(id, partner, logoPath));
         } else
@@ -71,20 +72,20 @@ public class ContentPartnerController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Callable<ResponseEntity<Collection<ContentPartner>>> getContentPartners(@RequestParam String ids){
-        logger.debug("Get content partners with ids: "+ids);
+    public Callable<ResponseEntity<Collection<LightContentPartner>>> getContentPartners(@RequestParam String ids) {
+        logger.debug("Get content partners with ids: " + ids);
         return () -> ResponseEntity.ok(contentPartnerService.getContentPartners(ids));
     }
 
-    @RequestMapping(value= "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<ContentPartner> getContentPartner(@PathVariable long id){
-        logger.debug("Content partner controller get partner with id: "+id);
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public ResponseEntity<LightContentPartner> getContentPartner(@PathVariable long id) {
+        logger.debug("Content partner controller get partner with id: " + id);
         return ResponseEntity.ok(contentPartnerService.getContentPartner(id));
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getAllCPsWithFullData/{startCPID}/{endCPID}", produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAllCPsWithFullData(@PathVariable("startCPID") Long startCPID,
-                                                                                          @PathVariable("endCPID") Long endCPID ) {
+                                                                                    @PathVariable("endCPID") Long endCPID) {
         ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(startCPID, endCPID));
         return responseEntity;
     }
@@ -95,4 +96,25 @@ public class ContentPartnerController {
         return responseEntity;
     }
 
+    @RequestMapping(method = RequestMethod.POST, value = "contentPartnerOfResource")
+    public Callable<ResponseEntity<LightContentPartner>> getContentPartnerOfResource(@RequestParam("resId") long resId) {
+
+        logger.debug("Get content partner of resource (" + resId + ")");
+        return () -> ResponseEntity.ok(contentPartnerService.getResourceCP(resId));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "contentPartnerWithResources/{id}")
+    public Callable<ResponseEntity<ContentPartner>> getFullContentPartner(@PathVariable long id) {
+        logger.debug("Get content partners resources with ids: " + id);
+        return () -> ResponseEntity.ok(contentPartnerService.getFullContentPartner(id));
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "count")
+    public Callable<ResponseEntity<Long>> getContentPartnerCount() {
+//        System.out.println("Get CP Count");
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getContentPartnerCount());
+        logger.info("Response: " + responseEntity);
+        return () -> responseEntity;
+    }
 }
+

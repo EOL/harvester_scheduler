@@ -25,6 +25,7 @@ public class Harvest {
     private Date deltas_created_at;
     private Date completed_at;
 
+
     @Enumerated(EnumType.STRING)
     private Harvest.State state;
     @ManyToOne
@@ -88,8 +89,12 @@ public class Harvest {
         this.state = state;
     }
 
-    Harvest.State getHarvestStatus(String harvestStr) {
+    public static Harvest.State getHarvestStatus(String harvestStr) {
         switch (harvestStr) {
+            case "true":
+                return Harvest.State.succeed;
+            case "false":
+                return Harvest.State.failed;
             case "succeed":
                 return Harvest.State.succeed;
             case "failed":
@@ -102,4 +107,5 @@ public class Harvest {
                 throw new IllegalArgumentException("Unknown " + harvestStr);
         }
     }
+
 }

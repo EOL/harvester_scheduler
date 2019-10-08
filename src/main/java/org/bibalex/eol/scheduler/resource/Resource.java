@@ -1,12 +1,11 @@
 package org.bibalex.eol.scheduler.resource;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.bibalex.eol.scheduler.content_partner.ContentPartner;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.hibernate.validator.constraints.Range;
-
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,12 +31,12 @@ import java.util.Set;
                 parameters = {
                         @StoredProcedureParameter(
                                 name = "cDate",
-                                type = Date.class,
+                                type = Timestamp.class,
                                 mode = ParameterMode.IN) })
 })
 
 public class Resource {
-    private enum Type {
+    public enum Type {
         url,
         file
     }
@@ -52,34 +51,56 @@ public class Resource {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String origin_url;
-    private String uploaded_url;
+    @Column(name="origin_url")
+    private String originUrl;
+    @Column(name="uploaded_url")
+    private String uploadedUrl;
     @Enumerated(EnumType.STRING)
     private Resource.Type type;
     private String path;
-    private Date last_harvested_at;
+    @Column(name="last_harvested_at")
+    private Date lastHarvestedAt;
     @Convert(converter = HarvestFreqConverter.class)
-    private Resource.HarvestFrequency harvest_frequency;
+    @Column(name="harvest_frequency")
+    private Resource.HarvestFrequency harvestFrequency;
     @Range(min = 0, max = 31)
-    private int day_of_month=0;
-    private int nodes_count;
+    @Column(name="day_of_month")
+    private int dayOfMonth=0;
+    @Column(name="nodes_count")
+    private int nodesCount;
     private int position = -1;
-    private boolean is_paused = false;
-    private boolean is_harvest_inprogress = false;
-    private boolean is_approved = false;
-    private boolean is_trusted = false;
-    private boolean forced_internally = false;
-    private boolean is_autopublished = false;
-    private boolean is_forced = false;
-    private int dataset_license = 47;
-    private String dataset_rights_statement;
-    private String dataset_rights_holder;
-    private int default_license_string;
-    private String default_rights_statement;
-    private String default_rights_holder;
-    private int default_language_id = 152;
-    private Date created_at;
-    private Date updated_at;
+    @Column(name="is_paused")
+    private boolean paused = false;
+    @Column(name="is_harvest_inprogress")
+    private boolean harvestInprogress = false;
+    @Column(name="is_approved")
+    private boolean approved = false;
+    @Column(name="is_trusted")
+    private boolean trusted = false;
+    @Column(name="forced_internally")
+    private boolean forcedInternally = false;
+    @Column(name="is_autopublished")
+    private boolean autopublished = false;
+    @Column(name="is_forced")
+    private boolean forced = false;
+    @Column(name="dataset_license")
+    private int datasetLicense = 47;
+    @Column(name="dataset_rights_statement")
+    private String datasetRightsStatement;
+    @Column(name="dataset_rights_holder")
+    private String datasetRightsHolder;
+    @Column(name="default_license_string")
+    private int defaultLicenseString;
+    @Column(name="defaultRightsStatement")
+    private String defaultRightsStatement;
+    @Column(name="default_rights_holder")
+    private String defaultRightsHolder;
+    @Column(name="default_language_id")
+    private int defaultLanguageId = 152;
+//    @Column(name="created_at")
+//    private Date createdAt;
+//    @Column(name="updated_at")
+//    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn (name="content_partner_id")
@@ -110,220 +131,220 @@ public class Resource {
         this.name = name;
     }
 
-    public String getOrigin_url() {
-        return origin_url;
+
+    public String getOriginUrl() {
+        return originUrl;
     }
 
-    public void setOrigin_url(String origin_url) {
-        this.origin_url = origin_url;
+    public String getUploadedUrl() {
+        return uploadedUrl;
     }
 
-    public String getUploaded_url() {
-        return uploaded_url;
-    }
-
-    public void setUploaded_url(String uploaded_url) {
-        this.uploaded_url = uploaded_url;
-    }
-
-    public Resource.Type getType() {
+    public Type getType() {
         return type;
-    }
-
-    public void setType(Resource.Type type) {
-        this.type = type;
     }
 
     public String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public Date getLastHarvestedAt() {
+        return lastHarvestedAt;
     }
 
-    public Date getLast_harvested_at() {
-        return last_harvested_at;
+    public HarvestFrequency getHarvestFrequency() {
+        return harvestFrequency;
     }
 
-    public void setLast_harvested_at(Date last_harvested_at) {
-        this.last_harvested_at = last_harvested_at;
+    public int getDayOfMonth() {
+        return dayOfMonth;
     }
 
-    public Resource.HarvestFrequency getHarvest_frequency() {
-        return harvest_frequency;
-    }
-
-    public void setHarvest_frequency(Resource.HarvestFrequency harvest_frequency) {
-        this.harvest_frequency = harvest_frequency;
-    }
-
-    public int getDay_of_month() {
-        return day_of_month;
-    }
-
-    public void setDay_of_month(int day_of_month) {
-        this.day_of_month = day_of_month;
-    }
-
-    public int getNodes_count() {
-        return nodes_count;
-    }
-
-    public void setNodes_count(int nodes_count) {
-        this.nodes_count = nodes_count;
+    public int getNodesCount() {
+        return nodesCount;
     }
 
     public int getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public boolean isPaused() {
+        return paused;
     }
 
-    public boolean is_paused() {
-        return is_paused;
+    public boolean isHarvestInprogress() {
+        return harvestInprogress;
     }
 
-    public void setIs_paused(boolean is_paused) {
-        this.is_paused = is_paused;
+    public boolean isApproved() {
+        return approved;
     }
 
-    public boolean is_approved() {
-        return is_approved;
+    public boolean isTrusted() {
+        return trusted;
     }
 
-    public void setIs_approved(boolean is_approved) {
-        this.is_approved = is_approved;
+    public boolean isForcedInternally() {
+        return forcedInternally;
     }
 
-    public boolean is_trusted() {
-        return is_trusted;
+    public boolean isAutopublished() {
+        return autopublished;
     }
 
-    public void setIs_trusted(boolean is_trusted) {
-        this.is_trusted = is_trusted;
+    public boolean isForced() {
+        return forced;
     }
 
-    public boolean is_autopublished() {
-        return is_autopublished;
+    public int getDatasetLicense() {
+        return datasetLicense;
     }
 
-    public void setIs_autopublished(boolean is_autopublished) {
-        this.is_autopublished = is_autopublished;
+    public String getDatasetRightsStatement() {
+        return datasetRightsStatement;
     }
 
-    public boolean is_forced() {
-        return is_forced;
+    public String getDatasetRightsHolder() {
+        return datasetRightsHolder;
     }
 
-    public void setIs_forced(boolean is_forced) {
-        this.is_forced = is_forced;
+    public int getDefaultLicenseString() {
+        return defaultLicenseString;
     }
 
-    public int getDataset_license() {
-        return dataset_license;
+    public String getDefaultRightsStatement() {
+        return defaultRightsStatement;
     }
 
-    public void setDataset_license(int dataset_license) {
-        this.dataset_license = dataset_license;
+    public String getDefaultRightsHolder() {
+        return defaultRightsHolder;
     }
 
-    public String getDataset_rights_statement() {
-        return dataset_rights_statement;
+    public int getDefaultLanguageId() {
+        return defaultLanguageId;
     }
 
-    public void setDataset_rights_statement(String dataset_rights_statement) {
-        this.dataset_rights_statement = dataset_rights_statement;
-    }
-
-    public String getDataset_rights_holder() {
-        return dataset_rights_holder;
-    }
-
-    public void setDataset_rights_holder(String dataset_rights_holder) {
-        this.dataset_rights_holder = dataset_rights_holder;
-    }
-
-    public int getDefault_license_string() {
-        return default_license_string;
-    }
-
-    public void setDefault_license_string(int default_license_string) {
-        this.default_license_string = default_license_string;
-    }
-
-    public String getDefault_rights_statement() {
-        return default_rights_statement;
-    }
-
-    public void setDefault_rights_statement(String default_rights_statement) {
-        this.default_rights_statement = default_rights_statement;
-    }
-
-    public String getDefault_rights_holder() {
-        return default_rights_holder;
-    }
-
-    public void setDefault_rights_holder(String default_rights_holder) {
-        this.default_rights_holder = default_rights_holder;
-    }
-
-    public int getDefault_language_id() {
-        return default_language_id;
-    }
-
-    public void setDefault_language_id(int default_language_id) {
-        this.default_language_id = default_language_id;
-    }
+//    public Date getCreatedAt() {
+//        return createdAt;
+//    }
+//
+//    public Date getUpdatedAt() {
+//        return updatedAt;
+//    }
 
     public ContentPartner getContentPartner() {
         return contentPartner;
-    }
-
-    public void setContentPartner(ContentPartner contentPartner) {
-        this.contentPartner = contentPartner;
     }
 
     public Set<Harvest> getHarvests() {
         return harvests;
     }
 
+    public void setOriginUrl(String originUrl) {
+        this.originUrl = originUrl;
+    }
+
+    public void setUploadedUrl(String uploadedUrl) {
+        this.uploadedUrl = uploadedUrl;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public void setLastHarvestedAt(Date lastHarvestedAt) {
+        this.lastHarvestedAt = lastHarvestedAt;
+    }
+
+    public void setHarvestFrequency(HarvestFrequency harvestFrequency) {
+        this.harvestFrequency = harvestFrequency;
+    }
+
+    public void setDayOfMonth(int dayOfMonth) {
+        this.dayOfMonth = dayOfMonth;
+    }
+
+    public void setNodesCount(int nodesCount) {
+        this.nodesCount = nodesCount;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public void setHarvestInprogress(boolean harvestInprogress) {
+        this.harvestInprogress = harvestInprogress;
+    }
+
+    public void setApproved(boolean isApproved) {
+        this.approved = isApproved;
+    }
+
+    public void setTrusted(boolean trusted) {
+        this.trusted = trusted;
+    }
+
+    public void setForcedInternally(boolean forcedInternally) {
+        this.forcedInternally = forcedInternally;
+    }
+
+    public void setAutopublished(boolean autopublished) {
+       this.autopublished = autopublished;
+    }
+
+    public void setForced(boolean forced) {
+        this.forced = forced;
+    }
+
+    public void setDatasetLicense(int datasetLicense) {
+        this.datasetLicense = datasetLicense;
+    }
+
+    public void setDatasetRightsStatement(String datasetRightsStatement) {
+        this.datasetRightsStatement = datasetRightsStatement;
+    }
+
+    public void setDatasetRightsHolder(String datasetRightsHolder) {
+        this.datasetRightsHolder = datasetRightsHolder;
+    }
+
+    public void setDefaultLicenseString(int defaultLicenseString) {
+        this.defaultLicenseString = defaultLicenseString;
+    }
+
+    public void setDefaultRightsStatement(String defaultRightsStatement) {
+        this.defaultRightsStatement = defaultRightsStatement;
+    }
+
+    public void setDefaultRightsHolder(String defaultRightsHolder) {
+        this.defaultRightsHolder = defaultRightsHolder;
+    }
+
+    public void setDefaultLanguageId(int defaultLanguageId) {
+        this.defaultLanguageId = defaultLanguageId;
+    }
+
+//    public void setCreatedAt(Date createdAt) {
+//        this.createdAt = createdAt;
+//    }
+//
+//    public void setUpdatedAt(Date updatedAt) {
+//        this.updatedAt = updatedAt;
+//    }
+
+    public void setContentPartner(ContentPartner contentPartner) {
+        this.contentPartner = contentPartner;
+    }
+
     public void setHarvests(Set<Harvest> harvests) {
         this.harvests = harvests;
     }
-
-    public Date getCreated_at() {
-        return created_at;
-    }
-
-    public void setCreated_at(Date created_at) {
-        this.created_at = created_at;
-    }
-
-    public Date getUpdated_at() {
-        return updated_at;
-    }
-
-    public void setUpdated_at(Date updated_at) {
-        this.updated_at = updated_at;
-    }
-
-    public boolean isIs_harvest_inprogress() {
-        return is_harvest_inprogress;
-    }
-
-    public void setIs_harvest_inprogress(boolean is_harvest_inprogress) {
-        this.is_harvest_inprogress = is_harvest_inprogress;
-    }
-
-    public boolean isForced_internally() {
-        return forced_internally;
-    }
-
-    public void setForced_internally(boolean forced_internally) {
-        this.forced_internally = forced_internally;
-    }
-
 }

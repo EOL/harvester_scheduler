@@ -114,8 +114,8 @@ CREATE TABLE `resource` (
   `default_rights_statement` text,
   `default_rights_holder` text,
   `default_language_id` int(11) DEFAULT '152',
-  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -189,7 +189,7 @@ begin
     WHERE  `type` = 'file' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
     `is_forced` = '1')
     UNION
-    SELECT * FROM resource
+    SELECT * FROM resourcePropertiesFile
     WHERE  `type` = 'url' AND `is_paused` = '0' AND is_harvest_inprogress != '1' AND (`last_harvested_at` IS NULL OR `forced_internally` = '1' OR  `day_of_month` = DAY(cDate) OR
     `is_forced` = '1' OR DATE_ADD(`last_harvested_at`,INTERVAL `harvest_frequency` DAY) = cDate) ;
 
