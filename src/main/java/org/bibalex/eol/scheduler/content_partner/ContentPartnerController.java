@@ -9,8 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 
@@ -21,7 +22,7 @@ public class ContentPartnerController {
     @Autowired
     private ContentPartnerService contentPartnerService;
 
-    @RequestMapping( method = RequestMethod.POST, params = "partner")
+    @RequestMapping(method = RequestMethod.POST, params = "partner")
     @ResponseBody
     public Callable<ResponseEntity<?>> createContentPartner(@RequestPart ContentPartner partner) throws IOException, SQLException {
         logger.info("Request: "+ partner.toString());
@@ -31,7 +32,7 @@ public class ContentPartnerController {
     }
 
 
-    @RequestMapping( method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public Callable<ResponseEntity<?>> createContentPartner(@RequestPart(required = false) String logoPath, @RequestPart String name, @RequestPart(required = false) String abbreviation,
                                                             @RequestPart String description, @RequestPart(required = false) String url)
@@ -75,6 +76,7 @@ public class ContentPartnerController {
         partner.setUrl(url);
         logger.info("Content Partner ID: "+ id);
         logger.info("Updated Attributes: " + partner.toString());
+
         if (logoPath != null) {
             ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.updateContentPartner(id, partner, logoPath));
             logger.info("Response: " + responseEntity);
@@ -95,10 +97,27 @@ public class ContentPartnerController {
     }
 
     @RequestMapping(value= "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<LightContentPartner> getContentPartner(@PathVariable long id){
-        logger.info("Content Partner ID: "+id);
+    public ResponseEntity<LightContentPartner> getContentPartner(@PathVariable long id) {
+        logger.info("Content Partner ID: " + id);
         ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getContentPartner(id));
         logger.info("Response: " + responseEntity);
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getAllCPsWithFullData/{startCPID}/{endCPID}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllCPsWithFullData(@PathVariable("startCPID") Long startCPID,
+                                                                                    @PathVariable("endCPID") Long endCPID) {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(startCPID, endCPID));
+        logger.info("Getting full data of content partners from: " + startCPID + "to: " + endCPID);
+        logger.debug(responseEntity);
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "getCPBoundaries")
+    public ResponseEntity<HashMap<String, Long>> getCPBoundaries() {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getCPBoundaries());
+        logger.info("Getting Boundary IDs of Content Partner Repository");
+        logger.debug("Content Partner Boundaries: " + responseEntity);
         return responseEntity;
     }
 
@@ -126,3 +145,4 @@ public class ContentPartnerController {
     }
 
 }
+

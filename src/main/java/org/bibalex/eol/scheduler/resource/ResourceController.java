@@ -105,6 +105,8 @@ public class ResourceController {
     @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID));
+        logger.info("Getting Harvest History of Resource: " + resourceID);
+        logger.debug("Harvest History: " + responseEntity);
         return responseEntity;
     }
 
@@ -112,12 +114,16 @@ public class ResourceController {
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
                                                                                           @PathVariable("endResourceID") Long endResourceID ) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
+        logger.info("Getting full data of resources from: " + startResourceID + "to: " + endResourceID);
+        logger.debug(responseEntity);
         return responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
     public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
+        logger.info("Getting Boundary IDs of Resource Repository");
+        logger.debug("Resource Boundaries: " + responseEntity);
         return responseEntity;
     }
 }

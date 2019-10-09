@@ -19,6 +19,8 @@ public interface ContentPartnerRepository extends JpaRepository<ContentPartner, 
     public Optional<List<LightContentPartner>> findByIdIn(List<Long> ids);
     public Optional<LightContentPartner> findByResources(List <Resource> c);
 //    public Optional<List<ContentPartner>> findById_2(long id);
+    public ContentPartner findContentPartnerById(long id);
+
 
     @Query("select p from ContentPartner p where p.id = ?1")
     Optional<ContentPartner> findFullContentPartnerById(long id);
