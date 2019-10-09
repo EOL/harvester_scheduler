@@ -1,9 +1,9 @@
 package org.bibalex.eol.scheduler.content_partner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +18,7 @@ import java.util.concurrent.Callable;
 @RestController
 @RequestMapping("/contentPartners")
 public class ContentPartnerController {
-    private static final Logger logger = LogManager.getLogger(ContentPartnerController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ContentPartnerController.class);
     @Autowired
     private ContentPartnerService contentPartnerService;
 
@@ -109,7 +109,7 @@ public class ContentPartnerController {
                                                                                     @PathVariable("endCPID") Long endCPID) {
         ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(startCPID, endCPID));
         logger.info("Getting full data of content partners from: " + startCPID + "to: " + endCPID);
-        logger.debug(responseEntity);
+//        logger.debug(responseEntity);
         return responseEntity;
     }
 

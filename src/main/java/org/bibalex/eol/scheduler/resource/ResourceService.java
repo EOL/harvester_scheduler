@@ -1,12 +1,13 @@
 package org.bibalex.eol.scheduler.resource;
 
-import org.apache.log4j.Logger;
 import org.bibalex.eol.scheduler.content_partner.ContentPartner;
 import org.bibalex.eol.scheduler.content_partner.ContentPartnerService;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.bibalex.eol.scheduler.harvest.HarvestRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 public class ResourceService {
 
-    private static final Logger logger = Logger.getLogger(ResourceService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
     @Autowired
     private ResourceRepository resourceRepository;
     @Autowired
@@ -40,7 +41,9 @@ public class ResourceService {
 //        if(resourceRepository.findById(resource.getId()).isPresent()) {
 //            resource.setForced_internally(true);
 //        }
-        return resourceRepository.save(resource).getId();
+        long resourceID = resourceRepository.save(resource).getId();
+        logger.info("Created Resource with ID: " + resourceID);
+        return resourceID;
     }
 
     public Resource updateResource(long contentPartnerId, Long resourceId, Resource resource) {

@@ -1,11 +1,11 @@
 package org.bibalex.eol.scheduler.content_partner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.resource.Resource;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ContentPartnerService {
-    private static final Logger logger = LogManager.getLogger(ContentPartnerService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ContentPartnerService.class);
     @Autowired
     private ContentPartnerRepository contentPartnerRepository;
 
