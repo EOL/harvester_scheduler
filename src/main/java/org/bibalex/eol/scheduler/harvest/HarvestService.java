@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.persistence.*;
@@ -137,6 +139,21 @@ public class HarvestService {
             executor.shutdownNow();
             logger.error("Executor Shutdown Finished");
         }
+
+    }
+    @Transactional
+    public boolean setMediaStatus (int id, int media_status){
+//        System.out.println(harvestRepository.updateMediaStatus(resource_id, media_status));
+
+        entityManager.joinTransaction();
+        Query transaction_query = entityManager.createNativeQuery("START TRANSACTION;");
+        transaction_query.executeUpdate();
+        Query update_query = entityManager.createNativeQuery("update harvest set media_status = " + String.valueOf(media_status) + " where id = "+ String.valueOf(id) + ";");
+        int result = update_query.executeUpdate();
+        if (result == 1) {
+            return true;
+        }
+        return false ;
 
     }
 
