@@ -1,16 +1,21 @@
 package org.bibalex.eol.scheduler.harvest;
 
+import org.bibalex.eol.scheduler.harvest.models.harvestMysql;
+import org.bibalex.eol.scheduler.helpers.DateHelper;
 import org.bibalex.eol.scheduler.resource.ResourceController;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.concurrent.Callable;
 
 @RestController
@@ -24,5 +29,12 @@ public class HarvestController {
     public boolean setMediaStatus(@PathVariable("id") int id,@PathVariable("mediaStatus") int mediaStatus) {
         logger.info("set media status for Resource ID: " + id + "status: " + mediaStatus);
         return harvestService.setMediaStatus(id, mediaStatus);
+    }
+
+    @RequestMapping(value="getImageResizedResources/{lastRequestTimetamp}/{mediaStatus}", method = RequestMethod.GET)
+    public ArrayList<harvestMysql> getImageResizedResources(@PathVariable("lastRequestTimetamp") String lastRequestTimetamp, @PathVariable("mediaStatus") int mediaStatus) {
+        Date converted_last_request_timestamp = DateHelper.convertFromMillisecondsToDate(lastRequestTimetamp);
+        logger.info("set resources have images resized after : " + converted_last_request_timestamp );
+        return harvestService.getImageResizedResources(converted_last_request_timestamp, mediaStatus);
     }
 }

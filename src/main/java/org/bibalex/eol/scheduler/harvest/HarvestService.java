@@ -1,5 +1,7 @@
 package org.bibalex.eol.scheduler.harvest;
 
+import org.bibalex.eol.scheduler.harvest.models.harvestMysql;
+import org.bibalex.eol.scheduler.helpers.DateHelper;
 import org.bibalex.eol.scheduler.resource.*;
 import org.bibalex.eol.scheduler.utils.PropertiesFile;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.persistence.*;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.PriorityQueue;
 import java.util.concurrent.Executors;
@@ -156,5 +159,28 @@ public class HarvestService {
         return false ;
 
     }
+
+    public ArrayList<harvestMysql> getImageResizedResources(Date converted_last_request_timestamp, int media_status) {
+        StoredProcedureQuery getHarvest = entityManager
+                .createStoredProcedureQuery("getHarvest")
+                .registerStoredProcedureParameter(
+                        "updated_at", Date.class, ParameterMode.IN)
+                .registerStoredProcedureParameter(
+                        "media_status", Integer.class, ParameterMode.IN);
+        getHarvest.setParameter("updated_at", converted_last_request_timestamp);
+        getHarvest.setParameter("media_status", media_status);
+
+        List<Object[]> res = getHarvest.getResultList();
+        Iterator it = res.iterator();
+        ArrayList<harvestMysql> harvest = new ArrayList<>();
+        while (it.hasNext()) {
+            Object[] line = (Object[]) it.next();
+            harvestMysql harvest_record = new harvestMysql((Integer) line[0], (Integer) line[1], (String) line[2]);
+            harvest.add(harvest_record);
+
+        }
+        return harvest;
+    }
+
 
 }
