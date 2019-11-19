@@ -132,6 +132,7 @@ public class ResourceService {
     public HashMap<String, String> getHarvestHistory(Long resourceID) {
 
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
+        harvest.sort(Comparator.comparing(Harvest::getStart_at).reversed());
 
         HashMap<String, String> resourceHarvestHistory = new HashMap();
         String harvestMap = "[";
@@ -178,7 +179,6 @@ public class ResourceService {
         return lastHarvest;
     }
 
-
     public HashMap<String, Long> getResourceBoundaries() {
         List<Resource> resources = resourceRepository.findAll();
         Long firstID = resources.get(0).getId(),
@@ -188,4 +188,15 @@ public class ResourceService {
         resourceLimitIDs.put("lastResourceId", lastID);
         return resourceLimitIDs;
     }
+
+    public HashMap<String, String> getLastHarvestLog(Long resourceID) {
+        HashMap<String, String> lastHarvestLog = new HashMap<>();
+        List<Harvest> fullHarvests = harvestRepository.findByResourceId(resourceID);
+        Harvest lastHarvest = fullHarvests.get(fullHarvests.size()-1);
+        lastHarvestLog.put("startTime", String.valueOf(lastHarvest.getStart_at()));
+        lastHarvestLog.put("endTime", String.valueOf(lastHarvest.getCompleted_at()));
+        lastHarvestLog.put("status", String.valueOf(lastHarvest.getState()));
+        return lastHarvestLog;
+    }
+
 }

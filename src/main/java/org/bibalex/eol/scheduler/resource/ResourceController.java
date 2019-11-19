@@ -108,6 +108,15 @@ public class ResourceController {
         return responseEntity;
     }
 
+
+    @RequestMapping(method = RequestMethod.GET, value = "getLastHarvestLog/{resourceID}", produces = "application/json")
+    public ResponseEntity<HashMap<String, String>> getLastHarvestLog(@PathVariable("resourceID") Long resourceID) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getLastHarvestLog(resourceID));
+        logger.info("Getting Last Harvest Log of Resource: " + resourceID);
+        logger.debug("Last Harvest Log: " + responseEntity);
+        return responseEntity;
+    }
+
     @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
                                                                                           @PathVariable("endResourceID") Long endResourceID ) {
