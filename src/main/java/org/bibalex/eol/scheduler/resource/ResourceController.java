@@ -1,8 +1,8 @@
 package org.bibalex.eol.scheduler.resource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +19,7 @@ import java.util.concurrent.Callable;
 @RestController
 @RequestMapping("/")
 public class ResourceController {
-    private static final Logger logger = LogManager.getLogger(ResourceController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ResourceController.class);
 
     @Autowired
     private ResourceService resourceService;
@@ -28,7 +28,6 @@ public class ResourceController {
     public Callable<ResponseEntity<?>> createResource(@PathVariable long contentPartnerId, @RequestBody Resource resource) {
         logger.info("Content Partner ID: " + contentPartnerId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.createResource(contentPartnerId, resource));
-        logger.info("Response: " + responseEntity);
         return () -> responseEntity;
     }
 
@@ -36,7 +35,7 @@ public class ResourceController {
     public Callable<ResponseEntity<Resource>> updateResource(@PathVariable long contentPartnerId, @PathVariable long resourceId, @RequestBody Resource resource) {
         logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.updateResource(contentPartnerId, resourceId, resource));
-        logger.info("Response: " + responseEntity);
+        logger.info("Updated Resource with ID: " + resourceId);
         return () -> responseEntity;
     }
 
@@ -44,7 +43,6 @@ public class ResourceController {
     public Callable<ResponseEntity<LightResource>> getResource(@PathVariable long resourceId) {
         logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResource(resourceId));
-        logger.info("Response: " + responseEntity);
         return () -> responseEntity;
     }
 
@@ -105,6 +103,8 @@ public class ResourceController {
     @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID));
+        logger.info("Getting Harvest History of Resource: " + resourceID);
+        logger.debug("Harvest History: " + responseEntity);
         return responseEntity;
     }
 
@@ -121,12 +121,16 @@ public class ResourceController {
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
                                                                                           @PathVariable("endResourceID") Long endResourceID ) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
+        logger.info("Getting full data of resources from: " + startResourceID + "to: " + endResourceID);
+        logger.debug("Response: " + responseEntity);
         return responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
     public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
+        logger.info("Getting Boundary IDs of Resource Repository");
+        logger.debug("Resource Boundaries: " + responseEntity);
         return responseEntity;
     }
 }

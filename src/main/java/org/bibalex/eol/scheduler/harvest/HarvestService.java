@@ -1,9 +1,9 @@
 package org.bibalex.eol.scheduler.harvest;
 
-import org.apache.logging.log4j.LogManager;
 import org.bibalex.eol.scheduler.resource.*;
-import org.apache.logging.log4j.Logger;
 import org.bibalex.eol.scheduler.utils.PropertiesFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class HarvestService {
 
-    private static final Logger logger = LogManager.getLogger(HarvestService.class);
+    private static final Logger logger = LoggerFactory.getLogger(HarvestService.class);
     private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     @PersistenceContext
     private EntityManager entityManager;

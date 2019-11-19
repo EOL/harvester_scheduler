@@ -1,42 +1,13 @@
 package org.bibalex.eol.scheduler.harvest;
 
-//import org.apache.http.HttpHost;
-//import org.apache.http.auth.AuthScope;
-//import org.apache.http.auth.UsernamePasswordCredentials;
-//import org.apache.http.client.CredentialsProvider;
-//import org.apache.http.impl.client.BasicCredentialsProvider;
-//import org.apache.http.impl.client.CloseableHttpClient;
-//import org.apache.http.impl.client.HttpClientBuilder;
-//import org.apache.http.impl.client.ProxyAuthenticationStrategy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-//import org.bibalex.eol.scheduler.utils.PropertiesFile;
-//import org.springframework.http.*;
-//import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-//import org.springframework.util.LinkedMultiValueMap;
-//import org.springframework.util.MultiValueMap;
-//import org.springframework.web.client.RestTemplate;
-
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.ProxyAuthenticationStrategy;
-import org.springframework.core.io.FileSystemResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
-
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -45,7 +16,7 @@ import java.util.Properties;
  */
 public class HarvesterClient {
 
-    private static final Logger logger = LogManager.getLogger(HarvesterClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(HarvesterClient.class);
 //    private PropertiesFile app;
 
 //    public void setApp(PropertiesFile app) {
