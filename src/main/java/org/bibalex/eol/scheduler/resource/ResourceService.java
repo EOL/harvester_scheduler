@@ -109,6 +109,8 @@ public class ResourceService {
     public HashMap<String, String> getHarvestHistory(Long resourceID, int offset, int limit) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit);
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID, pageable);
+        harvest.sort(Comparator.comparing(Harvest::getStart_at).reversed());
+
         HashMap<String, String> resourceHarvestHistory = new HashMap();
         String harvestMap = "[";
         int i = harvest.size();
@@ -135,17 +137,6 @@ public class ResourceService {
         return resourceHarvestHistory;
     }
 
-    public String getLastHarvestStatus(Long resourceID) {
-        List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
-        HashMap<String, String> lastHarvest = new HashMap();
-        String lastHarvestStatus = "";
-        if (!harvest.isEmpty()) {
-            Harvest harv = harvest.get(harvest.size() - 1);
-            lastHarvestStatus = String.valueOf(harv.getState());
-        }
-        return lastHarvestStatus;
-    }
-
     public ArrayList<HashMap<String,String>> getAllResourcesWithFullData(int offset, int limit) {
         Pageable pageable = new OffsetBasedPageRequest(offset, limit);
         ArrayList<HashMap<String, String>> allResources = new ArrayList<>();
@@ -163,4 +154,26 @@ public class ResourceService {
         }
         return allResources;
     }
+
+    public String getLastHarvestStatus(Long resourceID) {
+        List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
+        HashMap<String, String> lastHarvest = new HashMap();
+        String lastHarvestStatus = "";
+        if (!harvest.isEmpty()) {
+            Harvest harv = harvest.get(harvest.size() - 1);
+            lastHarvestStatus = String.valueOf(harv.getState());
+        }
+        return lastHarvestStatus;
+    }
+
+    public HashMap<String, String> getLastHarvestLog(Long resourceID) {
+        HashMap<String, String> lastHarvestLog = new HashMap<>();
+        List<Harvest> fullHarvests = harvestRepository.findByResourceId(resourceID);
+        Harvest lastHarvest = fullHarvests.get(fullHarvests.size()-1);
+        lastHarvestLog.put("startTime", String.valueOf(lastHarvest.getStart_at()));
+        lastHarvestLog.put("endTime", String.valueOf(lastHarvest.getCompleted_at()));
+        lastHarvestLog.put("status", String.valueOf(lastHarvest.getState()));
+        return lastHarvestLog;
+    }
+
 }
