@@ -46,9 +46,11 @@ public class ResourceController {
         return () -> responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "{contentPartnerId}/resources")
-    public ResponseEntity<Collection<LightResource>> getResources(@PathVariable long contentPartnerId) {
-        List<LightResource> resources = resourceService.getResources(contentPartnerId);
+    @RequestMapping(method = RequestMethod.GET, value = "{contentPartnerId}/resources/{offset}/{limit}")
+    public ResponseEntity<Collection<LightResource>> getResources(@PathVariable long contentPartnerId,
+                                                                  @PathVariable int offset,
+                                                                  @PathVariable int limit) {
+        List<LightResource> resources = resourceService.getResources(contentPartnerId, offset, limit);
         logger.info("Content Partner ID: " + contentPartnerId);
         HttpStatus status = HttpStatus.OK;
         if (resources == null)
@@ -100,28 +102,20 @@ public class ResourceController {
         return () -> responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID) {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID));
+    @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceID}/getHarvestHistory/{offset}/{limit}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getHarvestHistory(@PathVariable("resourceID") Long resourceID,
+                                                                                @PathVariable("offset") int offset,
+                                                                                @PathVariable("limit") int limit) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getHarvestHistory(resourceID, offset, limit));
         logger.info("Getting Harvest History of Resource: " + resourceID);
         logger.debug("Harvest History: " + responseEntity);
         return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
-                                                                                          @PathVariable("endResourceID") Long endResourceID ) {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
-        logger.info("Getting full data of resources from: " + startResourceID + "to: " + endResourceID);
-        logger.debug("Response: " + responseEntity);
-        return responseEntity;
-    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
-    public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
-        logger.info("Getting Boundary IDs of Resource Repository");
-        logger.debug("Resource Boundaries: " + responseEntity);
+    @RequestMapping(method = RequestMethod.GET, value = "resources/getAllResourcesWithFullData/{offset}/{limit}")
+    public ResponseEntity<HashMap<String, Long>> getAllResourcesExample(@PathVariable("offset") int offset,
+                                                                        @PathVariable("limit") int limit) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(offset, limit));
         return responseEntity;
     }
 }

@@ -104,22 +104,13 @@ public class ContentPartnerController {
         return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getAllCPsWithFullData/{startCPID}/{endCPID}", produces = "application/json")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllCPsWithFullData(@PathVariable("startCPID") Long startCPID,
-                                                                                    @PathVariable("endCPID") Long endCPID) {
-        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(startCPID, endCPID));
-        logger.info("Getting full data of content partners from: " + startCPID + "to: " + endCPID);
-//        logger.debug(responseEntity);
+    @RequestMapping(method = RequestMethod.GET, value = "getAllCPsWithFullData/{offset}/{limit}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllCPsWithFullData(@PathVariable("offset") int offset,
+                                                                                    @PathVariable("limit") int limit) {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getAllCPsWithFullData(offset, limit));
         return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getCPBoundaries")
-    public ResponseEntity<HashMap<String, Long>> getCPBoundaries() {
-        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getCPBoundaries());
-        logger.info("Getting Boundary IDs of Content Partner Repository");
-        logger.debug("Content Partner Boundaries: " + responseEntity);
-        return responseEntity;
-    }
 
     @RequestMapping(method = RequestMethod.POST, value = "contentPartnerOfResource")
     public Callable<ResponseEntity<LightContentPartner>> getContentPartnerOfResource(@RequestParam("resId") long resId){
@@ -138,7 +129,6 @@ public class ContentPartnerController {
     }
     @RequestMapping(method = RequestMethod.GET, value = "count")
     public Callable<ResponseEntity<Long>> getContentPartnerCount() {
-//        System.out.println("Get CP Count");
         ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getContentPartnerCount());
         logger.info("Response: " + responseEntity);
         return () -> responseEntity;

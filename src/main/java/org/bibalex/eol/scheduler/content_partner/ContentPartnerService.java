@@ -4,9 +4,12 @@ import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.resource.Resource;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.bibalex.eol.scheduler.utils.OffsetBasedPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -102,34 +105,21 @@ public class ContentPartnerService {
         return "";
     }
 
-    public ArrayList<HashMap<String, String>> getAllCPsWithFullData(Long startCPID, Long endCPID) {
+    public ArrayList<HashMap<String, String>> getAllCPsWithFullData(int offset, int limit) {
 
         ArrayList<HashMap<String, String>> contentPartners = new ArrayList<>();
 
-        while (startCPID <= endCPID) {
-            ContentPartner contentPartner = contentPartnerRepository.findContentPartnerById(startCPID);
-            if (contentPartner != null) {
-                HashMap<String, String> contentPartnersMap = new HashMap();
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        Page<ContentPartner> contentPartnersPaged = contentPartnerRepository.findAll(pageable);
 
-                contentPartnersMap.put("contentPartnerID", String.valueOf(contentPartner.getId()));
-                contentPartnersMap.put("contentPartnerName", contentPartner.getName());
-
-                contentPartners.add(contentPartnersMap);
-            }
-            startCPID++;
+        for (ContentPartner contentPartner: contentPartnersPaged){
+            HashMap<String, String> contentPartnersMap = new HashMap();
+            contentPartnersMap.put("contentPartnerID", String.valueOf(contentPartner.getId()));
+            contentPartnersMap.put("contentPartnerName", contentPartner.getName());
+            contentPartners.add(contentPartnersMap);
         }
 
         return contentPartners;
-    }
-
-    public HashMap<String, Long> getCPBoundaries() {
-        List<ContentPartner> contentPartners = (List<ContentPartner>) contentPartnerRepository.findAll();
-        Long firstID = contentPartners.get(0).getId(),
-                lastID = contentPartners.get(contentPartners.size() - 1).getId();
-        HashMap<String, Long> contentPartnerLimitIDs = new HashMap<>();
-        contentPartnerLimitIDs.put("firstContentPartnerId", firstID);
-        contentPartnerLimitIDs.put("lastContentPartnerId", lastID);
-        return contentPartnerLimitIDs;
     }
 
     public Long getContentPartnerCount() {

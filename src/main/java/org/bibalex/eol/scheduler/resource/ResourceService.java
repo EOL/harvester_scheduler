@@ -6,9 +6,12 @@ import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.bibalex.eol.scheduler.harvest.HarvestRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
+import org.bibalex.eol.scheduler.utils.OffsetBasedPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -62,9 +65,10 @@ public class ResourceService {
 //        return resourceRepository.findAllById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
 //    }
 
-    public List<LightResource> getResources(long contentPartnerId) {
+    public List<LightResource> getResources(long contentPartnerId, int offset, int limit) {
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
         contentPartnerService.validateContentPartner(contentPartnerId);
-        return resourceRepository.findByContentPartnerId(contentPartnerId);
+        return resourceRepository.findByContentPartnerId(contentPartnerId, pageable);
     }
 
     public void validateResource(long resourceId) {
@@ -102,41 +106,14 @@ public class ResourceService {
         return resourceRepository.count();
     }
 
-    public ArrayList<HashMap<String, String>> getAllResourcesWithFullData(Long startResourceID, Long endResourceID) {
-
-        //Resource Data: Resource ID, Resource Name, Content Partner ID, Content Partner Name, Last Harvest Status
-
-        ArrayList<HashMap<String, String>> resources = new ArrayList<>();
-
-        while (startResourceID <= endResourceID) {
-            Resource res = resourceRepository.findResourceById(startResourceID);
-            if (res != null) {
-                HashMap<String, String> resourceMap = new HashMap();
-
-                resourceMap.put("resourceID", String.valueOf(res.getId()));
-                resourceMap.put("resourceName", res.getName());
-                resourceMap.put("contentPartnerID", String.valueOf(res.getContentPartner().getId()));
-                resourceMap.put("contentPartnerName", res.getContentPartner().getName());
-                resourceMap.put("lastHarvestStatus", getLastHarvestStatus(res.getId()));
-
-                resources.add(resourceMap);
-            }
-            startResourceID ++;
-        }
-
-        return resources;
-    }
-
-    public HashMap<String, String> getHarvestHistory(Long resourceID) {
-
-        List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
-
+    public HashMap<String, String> getHarvestHistory(Long resourceID, int offset, int limit) {
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        List<Harvest> harvest = harvestRepository.findByResourceId(resourceID, pageable);
         HashMap<String, String> resourceHarvestHistory = new HashMap();
         String harvestMap = "[";
         int i = harvest.size();
         if (!harvest.isEmpty()) {
             for (Harvest harv : harvest) {
-
                 harvestMap += "{\"harvest_id\" : \"" + String.valueOf(harv.getId()) +
                         "\" ,\"startTime\" : \"" + String.valueOf(harv.getStart_at()) +
                         "\" ,\"endTime\" : \"" + String.valueOf(harv.getCompleted_at()) +
@@ -169,14 +146,21 @@ public class ResourceService {
         return lastHarvestStatus;
     }
 
+    public ArrayList<HashMap<String,String>> getAllResourcesWithFullData(int offset, int limit) {
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        ArrayList<HashMap<String, String>> allResources = new ArrayList<>();
+        Page<Resource> resources = resourceRepository.findAll(pageable);
+        for(Resource res : resources){
+            HashMap<String, String> resourceMap = new HashMap();
 
-    public HashMap<String, Long> getResourceBoundaries() {
-        List<Resource> resources = resourceRepository.findAll();
-        Long firstID = resources.get(0).getId(),
-                lastID = resources.get(resources.size() - 1).getId();
-        HashMap<String, Long> resourceLimitIDs = new HashMap<>();
-        resourceLimitIDs.put("firstResourceId", firstID);
-        resourceLimitIDs.put("lastResourceId", lastID);
-        return resourceLimitIDs;
+            resourceMap.put("resourceID", String.valueOf(res.getId()));
+            resourceMap.put("resourceName", res.getName());
+            resourceMap.put("contentPartnerID", String.valueOf(res.getContentPartner().getId()));
+            resourceMap.put("contentPartnerName", res.getContentPartner().getName());
+            resourceMap.put("lastHarvestStatus", getLastHarvestStatus(res.getId()));
+
+            allResources.add(resourceMap);
+        }
+        return allResources;
     }
 }

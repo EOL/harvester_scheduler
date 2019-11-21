@@ -1,6 +1,7 @@
 package org.bibalex.eol.scheduler.harvest;
 
 import org.bibalex.eol.scheduler.resource.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.query.Procedure;
@@ -15,5 +16,7 @@ import java.util.List;
 @RepositoryRestResource
 public interface HarvestRepository extends CrudRepository<Harvest, Long>{
 
-    public List<Harvest> findByResourceId(long resourceId);
+    List<Harvest> findByResourceId(long resourceId);
+
+    List<Harvest> findByResourceId(Long resourceID, Pageable pageable);
 }
