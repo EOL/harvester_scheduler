@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -107,9 +108,8 @@ public class ResourceService {
     }
 
     public HashMap<String, String> getHarvestHistory(Long resourceID, int offset, int limit) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        Pageable pageable = new OffsetBasedPageRequest(offset, limit, Sort.Direction.DESC, "id");
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID, pageable);
-        harvest.sort(Comparator.comparing(Harvest::getStart_at).reversed());
 
         HashMap<String, String> resourceHarvestHistory = new HashMap();
         String harvestMap = "[";
