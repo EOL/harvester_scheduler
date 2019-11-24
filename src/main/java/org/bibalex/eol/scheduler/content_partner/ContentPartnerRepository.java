@@ -1,13 +1,14 @@
 package org.bibalex.eol.scheduler.content_partner;
 
+import javafx.scene.effect.Light;
 import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.resource.Resource;
-import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
+import javax.persistence.EntityManager;
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,12 +20,11 @@ public interface ContentPartnerRepository extends JpaRepository<ContentPartner, 
     public Optional<List<LightContentPartner>> findByIdIn(List<Long> ids);
     public Optional<LightContentPartner> findByResources(List <Resource> c);
 //    public Optional<List<ContentPartner>> findById_2(long id);
-    public ContentPartner findContentPartnerById(long id);
+    public LightContentPartner findContentPartnerById(long id);
 
 
     @Query("select p from ContentPartner p where p.id = ?1")
     Optional<ContentPartner> findFullContentPartnerById(long id);
-
 }
 
 

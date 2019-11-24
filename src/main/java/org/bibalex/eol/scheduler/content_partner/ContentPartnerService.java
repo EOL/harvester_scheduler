@@ -1,8 +1,10 @@
 package org.bibalex.eol.scheduler.content_partner;
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.resource.Resource;
+import org.bibalex.eol.scheduler.resource.ResourceRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -23,6 +26,8 @@ public class ContentPartnerService {
     private static final Logger logger = LoggerFactory.getLogger(ContentPartnerService.class);
     @Autowired
     private ContentPartnerRepository contentPartnerRepository;
+    @Autowired
+    ResourceRepository resourceRepository;
 
     public long createContentPartner(ContentPartner partner, String logoPath) throws SQLException {
         logger.info("Calling");
@@ -86,10 +91,10 @@ public class ContentPartnerService {
                 () -> new NotFoundException("content partner", resId));
     }
 
-    public ContentPartner getFullContentPartner(long id) {
-        return contentPartnerRepository.findFullContentPartnerById(id).orElseThrow(
-                () -> new NotFoundException("content partner", id));
-    }
+//    public ContentPartner getFullContentPartner(long id) {
+//        return contentPartnerRepository.findFullContentPartnerById(id).orElseThrow(
+//                () -> new NotFoundException("content partner", id));
+//    }
 
     String getFileExtension(String filePath) {
         int index = filePath.lastIndexOf(File.separator);
@@ -111,7 +116,7 @@ public class ContentPartnerService {
         Pageable pageable = new PageRequest(offset, limit);
         Page<ContentPartner> contentPartnersPaged = contentPartnerRepository.findAll(pageable);
 
-        for (ContentPartner contentPartner: contentPartnersPaged){
+        for (ContentPartner contentPartner : contentPartnersPaged) {
             HashMap<String, String> contentPartnersMap = new HashMap();
             contentPartnersMap.put("contentPartnerID", String.valueOf(contentPartner.getId()));
             contentPartnersMap.put("contentPartnerName", contentPartner.getName());
@@ -123,5 +128,35 @@ public class ContentPartnerService {
 
     public Long getContentPartnerCount() {
         return contentPartnerRepository.count();
+    }
+
+    public HashMap<String, Object> getFullContentPartner(long id) {
+
+        LightContentPartner contentPartner = contentPartnerRepository.findContentPartnerById(id);
+        HashMap<String, Object> fullContentPartner = new HashMap<>();
+        fullContentPartner.put("id", contentPartner.getId());
+        fullContentPartner.put("name", contentPartner.getName());
+        fullContentPartner.put("abbreviation", contentPartner.getAbbreviation());
+        fullContentPartner.put("url", contentPartner.getUrl());
+        fullContentPartner.put("description", contentPartner.getDescription());
+        fullContentPartner.put("logoType", contentPartner.getLogoType());
+        fullContentPartner.put("logoPath", contentPartner.getLogoPath());
+
+        List<LightResource> cpResources = new ArrayList(),
+                resources;
+
+        int limit = 20,
+                offset = 0;
+        do {
+            Pageable pageable = new PageRequest(offset, limit);
+            resources = resourceRepository.findByContentPartnerId(id, pageable);
+            cpResources.addAll(resources);
+            offset += limit;
+        }
+        while (!(resources.isEmpty()));
+
+        fullContentPartner.put("resources", cpResources);
+
+        return fullContentPartner;
     }
 }

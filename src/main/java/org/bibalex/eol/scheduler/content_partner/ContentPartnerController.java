@@ -127,6 +127,7 @@ public class ContentPartnerController {
         logger.info("Response: " + responseEntity);
         return () -> responseEntity;
     }
+
     @RequestMapping(method = RequestMethod.GET, value = "count")
     public Callable<ResponseEntity<Long>> getContentPartnerCount() {
         ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getContentPartnerCount());
