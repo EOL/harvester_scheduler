@@ -4,7 +4,6 @@ import org.bibalex.eol.scheduler.content_partner.models.LightContentPartner;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.resource.Resource;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
-import org.bibalex.eol.scheduler.utils.OffsetBasedPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
