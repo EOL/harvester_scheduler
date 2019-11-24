@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -108,8 +109,7 @@ public class ContentPartnerService {
     public ArrayList<HashMap<String, String>> getAllCPsWithFullData(int offset, int limit) {
 
         ArrayList<HashMap<String, String>> contentPartners = new ArrayList<>();
-
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        Pageable pageable = new PageRequest(offset, limit);
         Page<ContentPartner> contentPartnersPaged = contentPartnerRepository.findAll(pageable);
 
         for (ContentPartner contentPartner: contentPartnersPaged){

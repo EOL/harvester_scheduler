@@ -6,11 +6,11 @@ import org.bibalex.eol.scheduler.exceptions.NotFoundException;
 import org.bibalex.eol.scheduler.harvest.Harvest;
 import org.bibalex.eol.scheduler.harvest.HarvestRepository;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
-import org.bibalex.eol.scheduler.utils.OffsetBasedPageRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -67,7 +67,7 @@ public class ResourceService {
 //    }
 
     public List<LightResource> getResources(long contentPartnerId, int offset, int limit) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        Pageable pageable = new PageRequest(offset, limit);
         contentPartnerService.validateContentPartner(contentPartnerId);
         return resourceRepository.findByContentPartnerId(contentPartnerId, pageable);
     }
@@ -108,7 +108,7 @@ public class ResourceService {
     }
 
     public HashMap<String, String> getHarvestHistory(Long resourceID, int offset, int limit) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit, Sort.Direction.DESC, "id");
+        Pageable pageable = new PageRequest(offset, limit, Sort.Direction.DESC, "id");
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID, pageable);
 
         HashMap<String, String> resourceHarvestHistory = new HashMap();
@@ -138,7 +138,7 @@ public class ResourceService {
     }
 
     public ArrayList<HashMap<String,String>> getAllResourcesWithFullData(int offset, int limit) {
-        Pageable pageable = new OffsetBasedPageRequest(offset, limit);
+        Pageable pageable = new PageRequest(offset, limit);
         ArrayList<HashMap<String, String>> allResources = new ArrayList<>();
         Page<Resource> resources = resourceRepository.findAll(pageable);
         for(Resource res : resources){
