@@ -57,10 +57,10 @@ public class Resource {
 
     private String name;
 
-    @Column(name="origin_url")
+    @Column(name = "origin_url")
     private String originUrl;
 
-    @Column(name="uploaded_url")
+    @Column(name = "uploaded_url")
     private String uploadedUrl;
 
     @Enumerated(EnumType.STRING)
@@ -68,70 +68,70 @@ public class Resource {
 
     private String path;
 
-    @Column(name="last_harvested_at")
+    @Column(name = "last_harvested_at")
     private Date lastHarvestedAt;
 
     @Convert(converter = HarvestFreqConverter.class)
-    @Column(name="harvest_frequency")
+    @Column(name = "harvest_frequency")
     private Resource.HarvestFrequency harvestFrequency;
 
     @Range(min = 0, max = 31)
-    @Column(name="day_of_month")
-    private int dayOfMonth=0;
+    @Column(name = "day_of_month")
+    private int dayOfMonth = 0;
 
-    @Column(name="nodes_count")
+    @Column(name = "nodes_count")
     private int nodesCount;
 
     private int position = -1;
 
-    @Column(name="is_paused")
+    @Column(name = "is_paused")
     private boolean paused = false;
 
-    @Column(name="is_harvest_inprogress")
+    @Column(name = "is_harvest_inprogress")
     private boolean harvestInprogress = false;
 
-    @Column(name="is_approved")
+    @Column(name = "is_approved")
     private boolean approved = false;
 
-    @Column(name="is_trusted")
+    @Column(name = "is_trusted")
     private boolean trusted = false;
 
-    @Column(name="forced_internally")
+    @Column(name = "forced_internally")
     private boolean forcedInternally = false;
 
-    @Column(name="is_autopublished")
+    @Column(name = "is_autopublished")
     private boolean autopublished = false;
 
-    @Column(name="is_forced")
+    @Column(name = "is_forced")
     private boolean forced = false;
 
-    @Column(name="dataset_license")
+    @Column(name = "dataset_license")
     private int datasetLicense = 47;
 
-    @Column(name="dataset_rights_statement")
+    @Column(name = "dataset_rights_statement")
     private String datasetRightsStatement;
 
-    @Column(name="dataset_rights_holder")
+    @Column(name = "dataset_rights_holder")
     private String datasetRightsHolder;
 
-    @Column(name="default_license_string")
+    @Column(name = "default_license_string")
     private int defaultLicenseString;
 
-    @Column(name="defaultRightsStatement")
+    @Column(name = "defaultRightsStatement")
     private String defaultRightsStatement;
 
-    @Column(name="default_rights_holder")
+    @Column(name = "default_rights_holder")
     private String defaultRightsHolder;
 
-    @Column(name="default_language_id")
+    @Column(name = "default_language_id")
     private int defaultLanguageId = 152;
 
     @ManyToOne
-    @JoinColumn (name="content_partner_id")
+    @JoinColumn (name = "content_partner_id")
     @JsonBackReference
     private ContentPartner contentPartner;
 
-    @OneToMany(mappedBy ="resource")
+    @OneToMany(mappedBy = "resource")
     private Set<Harvest> harvests = new HashSet<>();
 
     public Resource(){

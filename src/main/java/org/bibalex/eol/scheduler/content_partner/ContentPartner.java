@@ -23,10 +23,10 @@ public class ContentPartner implements Serializable {
 
     private String description;
 
-    @Column(name="logo_path")
+    @Column(name = "logo_path")
     private String logoPath;
 
-    @Column(name="logo_type")
+    @Column(name = "logo_type")
     private String logoType;
 
     @OneToMany(mappedBy ="contentPartner")
@@ -104,8 +104,9 @@ public class ContentPartner implements Serializable {
 
     @Override
     public String toString(){
-        StringBuilder str = new StringBuilder();
-        str.append("name: "+getName()+ "\nabbreviation: "+getAbbreviation()+ "\nDescription: "+getDescription() +"\nurl: "+getUrl());
-        return str.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("name: " + getName() + "\nabbreviation: " + getAbbreviation() + "\nDescription: " +
+                getDescription() + "\nurl: " + getUrl());
+        return stringBuilder.toString();
     }
 }

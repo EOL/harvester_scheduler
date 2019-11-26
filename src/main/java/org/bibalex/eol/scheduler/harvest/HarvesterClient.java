@@ -22,7 +22,7 @@ public class HarvesterClient {
 
     public Harvest.State harvestResource(String resId) {
         try {
-            logger.info("Downloading Resource: " + resId +" into Harvester");
+            logger.info("Downloading Resource: " + resId + " into Harvester");
             Properties prop = new Properties();
             InputStream input = HarvesterClient.class.getClassLoader().getResourceAsStream("application.properties");
             try {
@@ -49,8 +49,7 @@ public class HarvesterClient {
             map.add(prop.getProperty("resourceId"),resId);
 
             HttpHeaders headers = new HttpHeaders();
-            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
-                    new HttpEntity<LinkedMultiValueMap<String, Object>>(map, headers);
+            HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new HttpEntity<LinkedMultiValueMap<String, Object>>(map, headers);
 
             logger.debug("Sending Harvester Request");
 

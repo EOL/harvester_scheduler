@@ -30,7 +30,8 @@ public class ResourceController {
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "{contentPartnerId}/resources/{resourceId}")
-    public Callable<ResponseEntity<Resource>> updateResource(@PathVariable long contentPartnerId, @PathVariable long resourceId, @RequestBody Resource resource) {
+    public Callable<ResponseEntity<Resource>> updateResource(@PathVariable long contentPartnerId,
+                                                             @PathVariable long resourceId, @RequestBody Resource resource) {
         logger.info("Resource ID: " + resourceId);
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.updateResource(contentPartnerId, resourceId, resource));
         logger.info("Updated Resource with ID: " + resourceId);
@@ -78,7 +79,8 @@ public class ResourceController {
         return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
+    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}",
+            produces = "application/json")
     public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
                                                                                           @PathVariable("endResourceID") Long endResourceID ) {
         ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));

@@ -44,7 +44,7 @@ public class HarvestService {
     private void init() {
         logger.debug("Calling");
 
-        resourcePriorityQueue = new PriorityQueue<Resource>(new ResourcePositionComparator());
+        resourcePriorityQueue = new PriorityQueue<>(new ResourcePositionComparator());
         HarvesterClient harvestClient = new HarvesterClient();
 
         logger.debug("After Creating Priority Queue");
@@ -55,27 +55,27 @@ public class HarvestService {
         midnight.setSeconds(0);
 
         logger.debug("Before Initial Delay");
-        long initialDelay = (10000); // on minute
+        long initialDelay = (10000); // one minute
 
         // every time the scheduled task run fill the queue from the database
-        executor.scheduleAtFixedRate(()->{
+        executor.scheduleAtFixedRate(() -> {
             logger.info("Getting Resources to Be Harvested from DB");
             StoredProcedureQuery findByYearProcedure =
                     entityManager.createNamedStoredProcedureQuery("harvestResource_sp");
-            Date dt = new Date();
+            Date date = new Date();
             StoredProcedureQuery storedProcedure =
-                    findByYearProcedure.setParameter("cDate", dt);
+                    findByYearProcedure.setParameter("cDate", date);
             logger.info("Number of Resources to Be Harvested: " + storedProcedure.getResultList().size());
-            storedProcedure.getResultList()
-                    .forEach(resource -> {
-                        Resource res = (Resource)resource;
-                        resourcePriorityQueue.add(res);
-                    });
-            while(!resourcePriorityQueue.isEmpty()) {
+            storedProcedure.getResultList().forEach(resource -> {
+                Resource res = (Resource) resource;
+                resourcePriorityQueue.add(res);
+            });
+
+            while (!resourcePriorityQueue.isEmpty()) {
                 Resource resource = resourcePriorityQueue.poll();
                 logger.info("Harvesting Resource: " + resource.getId());
                 Date startDate = new Date();
-                try{
+                try {
                     logger.debug("Going into Harvesting:");
 
                     resource.setHarvestInprogress(true);
@@ -105,19 +105,17 @@ public class HarvestService {
                     e.printStackTrace();
                 }
             }
-        }, initialDelay , 30000L, TimeUnit.MILLISECONDS);  // delay 40 sec
+        }, initialDelay, 30000L, TimeUnit.MILLISECONDS);  // delay 40 sec
     }
 
     @PreDestroy
-    private void destroy(){
+    private void destroy() {
         try {
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.error("InterruptedException: Executor Tasks Interrupted");
-        }
-        finally {
+        } finally {
             if (!executor.isTerminated()) {
                 logger.error("Cancel Unfinished Executor Tasks");
             }

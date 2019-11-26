@@ -72,8 +72,9 @@ public class ResourceService {
             logger.error("Exception: Resources not Found");
             throw new NotFoundException("resources ", resourcesIds);
         }
-        return resourceRepository.findByIdIn(Arrays.asList(resourcesIds.split("\\s*,\\s*")).stream().map(Long::valueOf).collect(Collectors.toList())).orElseThrow(
-                () -> new NotFoundException("resources", resourcesIds));
+        return resourceRepository.findByIdIn(Arrays.asList(resourcesIds.split("\\s*,\\s*"))
+                .stream().map(Long::valueOf).collect(Collectors.toList()))
+                .orElseThrow(() -> new NotFoundException("resources", resourcesIds));
     }
 
     public void validateResource(long resourceId) {
@@ -162,12 +163,10 @@ public class ResourceService {
         return lastHarvestStatus;
     }
 
-    public boolean checkReadyResources(Timestamp ts) {
-        StoredProcedureQuery getResourcesQuery =
-                entityManager.createNamedStoredProcedureQuery("getHarvestedResources_sp");
+    public boolean checkReadyResources(Timestamp timestamp) {
+        StoredProcedureQuery getResourcesQuery = entityManager.createNamedStoredProcedureQuery("getHarvestedResources_sp");
 
-        StoredProcedureQuery storedProcedure =
-                getResourcesQuery.setParameter("cDate", ts);
+        StoredProcedureQuery storedProcedure = getResourcesQuery.setParameter("cDate", timestamp);
 
         BigInteger count = (BigInteger) storedProcedure.getSingleResult();
         logger.debug("Number of Ready Resources: " + count.toString());

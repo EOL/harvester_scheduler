@@ -32,7 +32,7 @@ public class Harvest {
     private Harvest.State state;
 
     @ManyToOne
-    @JoinColumn (name="resource_id")
+    @JoinColumn (name = "resource_id")
     @JsonBackReference
     private Resource resource;
 

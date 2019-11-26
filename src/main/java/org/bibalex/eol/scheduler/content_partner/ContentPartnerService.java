@@ -62,9 +62,10 @@ public class ContentPartnerService {
 
     public Collection<LightContentPartner> getContentPartners(String partnerIds) {
         logger.info("Content Partner IDs: " + partnerIds);
-        if (partnerIds == null || partnerIds != null && partnerIds.length() == 0)
+        if (partnerIds == null || (partnerIds != null && partnerIds.length() == 0))
             throw new NotFoundException("content partner", partnerIds);
-        return contentPartnerRepository.findByIdIn(Arrays.asList(partnerIds.split("\\s*,\\s*")).stream().map(Long::valueOf).collect(Collectors.toList())).orElseThrow(
+        return contentPartnerRepository.findByIdIn(Arrays.asList(partnerIds.
+                split("\\s*,\\s*")).stream().map(Long::valueOf).collect(Collectors.toList())).orElseThrow(
                 () -> new NotFoundException("content partner", partnerIds));
     }
 
@@ -105,12 +106,12 @@ public class ContentPartnerService {
     }
 
     public HashMap<String, Long> getCPBoundaries() {
-        List<ContentPartner> contentPartners = (List<ContentPartner>) contentPartnerRepository.findAll();
-        Long firstID = contentPartners.get(0).getId(),
-                lastID = contentPartners.get(contentPartners.size() - 1).getId();
+        List<ContentPartner> contentPartners = contentPartnerRepository.findAll();
+        Long firstId = contentPartners.get(0).getId(),
+                lastId = contentPartners.get(contentPartners.size() - 1).getId();
         HashMap<String, Long> contentPartnerLimitIDs = new HashMap<>();
-        contentPartnerLimitIDs.put("firstContentPartnerId", firstID);
-        contentPartnerLimitIDs.put("lastContentPartnerId", lastID);
+        contentPartnerLimitIDs.put("firstContentPartnerId", firstId);
+        contentPartnerLimitIDs.put("lastContentPartnerId", lastId);
         return contentPartnerLimitIDs;
     }
 
