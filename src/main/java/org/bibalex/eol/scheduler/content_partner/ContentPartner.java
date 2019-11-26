@@ -1,22 +1,26 @@
 package org.bibalex.eol.scheduler.content_partner;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.bibalex.eol.scheduler.resource.Resource;
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
+import javax.persistence.*;
+import org.bibalex.eol.scheduler.resource.Resource;
 
 @Entity
 @JsonIgnoreProperties
 public class ContentPartner implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
     private String name;
+
     private String abbreviation;
+
     private String url;
+
     private String description;
 
     @Column(name="logo_path")
@@ -31,6 +35,7 @@ public class ContentPartner implements Serializable {
     public ContentPartner(long id){
         this.id = id;
     }
+
     public ContentPartner(){}
 
     public Set<Resource> getResources() {

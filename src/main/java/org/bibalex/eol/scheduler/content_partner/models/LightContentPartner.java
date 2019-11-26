@@ -1,22 +1,23 @@
-package org.bibalex.eol.scheduler.content_partner.models;
-
 /**
  * Created by maha.mostafa on 2/25/18.
  */
+
+package org.bibalex.eol.scheduler.content_partner.models;
+
 public interface LightContentPartner {
 
-    public long getId();
+    long getId();
 
-    public String getName();
+    String getName();
 
-    public String getAbbreviation();
+    String getAbbreviation();
 
-    public String getUrl();
+    String getUrl();
 
-    public String getDescription();
+    String getDescription();
 
-    public String getLogoPath();
+    String getLogoPath();
 
-    public String getLogoType();
+    String getLogoType();
 
 }

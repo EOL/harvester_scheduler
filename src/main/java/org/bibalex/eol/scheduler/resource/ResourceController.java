@@ -1,5 +1,11 @@
 package org.bibalex.eol.scheduler.resource;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.concurrent.Callable;
 import org.bibalex.eol.scheduler.resource.models.LightResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,14 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Callable;
-
 
 @RestController
 @RequestMapping("/")
@@ -57,6 +55,13 @@ public class ResourceController {
         return new ResponseEntity<>(resources, status);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "resources")
+    public Callable<ResponseEntity<Collection<LightResource>>> getResources(@RequestParam("ids") String ids) {
+        logger.info("Resource IDs: " + ids);
+        return () -> ResponseEntity.ok(resourceService.getResources(ids));
+    }
+
+
     @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceId}")
     public Callable<ResponseEntity<LightResource>> getResourceWithoutCP(@PathVariable long resourceId) {
         logger.info("Resource ID: " + resourceId);
@@ -65,39 +70,21 @@ public class ResourceController {
         return () -> responseEntity;
     }
 
-//    @RequestMapping(method = RequestMethod.POST, value = "resources")
-//    public Callable<ResponseEntity<Boolean>> checkReadyResources(@RequestParam("fromDate") @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss") Date date){
-//        logger.debug("Get ready harvested resources.");
-//        return () ->  ResponseEntity.ok(resourceService.checkReadyResources(date));
-//    }
-
-    @RequestMapping(method = RequestMethod.GET, value = "readyResources/{fromDate}")
-    public Callable<ResponseEntity<Boolean>> checkReadyResources(@PathVariable("fromDate") String tsStr) {
-        Timestamp ts = new java.sql.Timestamp(Long.parseLong(tsStr));
-        logger.info("Timestamp: " + ts);
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.checkReadyResources(ts));
-//        System.out.println("-------->"+ts);
-        logger.info("Response: " + responseEntity);
-        return () -> responseEntity;
+    @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
+    public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
+        logger.info("Getting Boundary IDs of Resource Repository");
+        logger.debug("Resource Boundaries: " + responseEntity);
+        return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "resources")
-    public Callable<ResponseEntity<Collection<LightResource>>> getResources(@RequestParam("ids") String ids) {
-        logger.info("Resource IDs: " + ids);
-        return () -> ResponseEntity.ok(resourceService.getResources(ids));
-    }
-
-    //    @RequestMapping(method = RequestMethod.GET, value = "resources/{resourceId}/contentPartner")
-//    public Callable<ResponseEntity<Resource>> getResourceWithCP(@PathVariable long resourceId){
-//        logger.debug("Get resource of id "+resourceId );
-//        return () ->  ResponseEntity.ok(resourceService.getResourceWithCP(resourceId));
-//    }
-    @RequestMapping(method = RequestMethod.GET, value = "resources/count")
-    public Callable<ResponseEntity<Long>> getResourceCount() {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceCount());
-        logger.info("Resource Count: " + responseEntity);
-//    System.out.println("Get Resource Count");
-        return () -> responseEntity;
+    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
+    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
+                                                                                          @PathVariable("endResourceID") Long endResourceID ) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
+        logger.info("Getting full data of resources from: " + startResourceID + " to: " + endResourceID);
+        logger.debug("Response: " + responseEntity);
+        return responseEntity;
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "getHarvestHistory/{resourceID}", produces = "application/json")
@@ -108,21 +95,21 @@ public class ResourceController {
         return responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getAllResourcesWithFullData/{startResourceID}/{endResourceID}", produces = "application/json")
-    public ResponseEntity<ArrayList<HashMap<String, String>>> getAllResourcesWithFullData(@PathVariable("startResourceID") Long startResourceID,
-                                                                                          @PathVariable("endResourceID") Long endResourceID ) {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getAllResourcesWithFullData(startResourceID, endResourceID));
-        logger.info("Getting full data of resources from: " + startResourceID + "to: " + endResourceID);
-        logger.debug("Response: " + responseEntity);
-        return responseEntity;
+    @RequestMapping(method = RequestMethod.GET, value = "readyResources/{fromDate}")
+    public Callable<ResponseEntity<Boolean>> checkReadyResources(@PathVariable("fromDate") String tsStr) {
+        Timestamp ts = new java.sql.Timestamp(Long.parseLong(tsStr));
+        logger.info("Timestamp: " + ts);
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.checkReadyResources(ts));
+        logger.info("Response: " + responseEntity);
+        return () -> responseEntity;
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "getResourceBoundaries")
-    public ResponseEntity<HashMap<String, Long>> getResourceBoundaries() {
-        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceBoundaries());
-        logger.info("Getting Boundary IDs of Resource Repository");
-        logger.debug("Resource Boundaries: " + responseEntity);
-        return responseEntity;
+    @RequestMapping(method = RequestMethod.GET, value = "resources/count")
+    public Callable<ResponseEntity<Long>> getResourceCount() {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.getResourceCount());
+        logger.info("Resource Count: " + responseEntity);
+        return () -> responseEntity;
     }
+
 }
 

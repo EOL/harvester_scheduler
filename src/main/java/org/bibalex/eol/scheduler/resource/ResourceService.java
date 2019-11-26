@@ -1,5 +1,12 @@
 package org.bibalex.eol.scheduler.resource;
 
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.stream.Collectors;
+import java.util.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.StoredProcedureQuery;
 import org.bibalex.eol.scheduler.content_partner.ContentPartner;
 import org.bibalex.eol.scheduler.content_partner.ContentPartnerService;
 import org.bibalex.eol.scheduler.exceptions.NotFoundException;
@@ -11,25 +18,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.StoredProcedureQuery;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.stream.Collectors;
-
-
 @Service
 public class ResourceService {
 
     private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
+
     @Autowired
     private ResourceRepository resourceRepository;
+
     @Autowired
     private HarvestRepository harvestRepository;
+
     @Autowired
     private ContentPartnerService contentPartnerService;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -38,9 +40,10 @@ public class ResourceService {
         resource.setContentPartner(new ContentPartner(contentPartnerId));
 
         // reharvest
-//        if(resourceRepository.findById(resource.getId()).isPresent()) {
-//            resource.setForced_internally(true);
-//        }
+        // if(resourceRepository.findById(resource.getId()).isPresent()) {
+            //  resource.setForced_internally(true);
+        //  }
+
         long resourceID = resourceRepository.save(resource).getId();
         logger.info("Created Resource with ID: " + resourceID);
         return resourceID;
@@ -58,30 +61,9 @@ public class ResourceService {
         return resourceRepository.findById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
     }
 
-//    public Resource getCompleteResource(long resourceId){
-//        return resourceRepository.findAllById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
-//    }
-
     public List<LightResource> getResources(long contentPartnerId) {
         contentPartnerService.validateContentPartner(contentPartnerId);
         return resourceRepository.findByContentPartnerId(contentPartnerId);
-    }
-
-    public void validateResource(long resourceId) {
-        resourceRepository.findById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
-    }
-
-    public boolean checkReadyResources(Timestamp ts) {
-        StoredProcedureQuery getResourcesQuery =
-                entityManager.createNamedStoredProcedureQuery("getHarvestedResources_sp");
-
-        StoredProcedureQuery storedProcedure =
-                getResourcesQuery.setParameter("cDate", ts);
-
-        BigInteger count = (BigInteger) storedProcedure.getSingleResult();
-        logger.debug("Number of Ready Resources: " + count.toString());
-//        System.out.println("checkReadyResources: " + count);
-        return (count.signum() == 1 ? true : false);
     }
 
     public Collection<LightResource> getResources(String resourcesIds) {
@@ -94,12 +76,22 @@ public class ResourceService {
                 () -> new NotFoundException("resources", resourcesIds));
     }
 
+    public void validateResource(long resourceId) {
+        resourceRepository.findById(resourceId).orElseThrow(() -> new NotFoundException("resource", resourceId));
+    }
+
     public LightResource getLightResource(long id) {
         return resourceRepository.findById(id).orElseThrow(() -> new NotFoundException("resource", 1));
     }
 
-    public Long getResourceCount() {
-        return resourceRepository.count();
+    public HashMap<String, Long> getResourceBoundaries() {
+        List<Resource> resources = resourceRepository.findAll();
+        Long firstID = resources.get(0).getId(),
+                lastID = resources.get(resources.size() - 1).getId();
+        HashMap<String, Long> resourceLimitIDs = new HashMap<>();
+        resourceLimitIDs.put("firstResourceId", firstID);
+        resourceLimitIDs.put("lastResourceId", lastID);
+        return resourceLimitIDs;
     }
 
     public ArrayList<HashMap<String, String>> getAllResourcesWithFullData(Long startResourceID, Long endResourceID) {
@@ -123,17 +115,16 @@ public class ResourceService {
             }
             startResourceID ++;
         }
-
         return resources;
     }
 
     public HashMap<String, String> getHarvestHistory(Long resourceID) {
-
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
-
         HashMap<String, String> resourceHarvestHistory = new HashMap();
+
         String harvestMap = "[";
         int i = harvest.size();
+
         if (!harvest.isEmpty()) {
             for (Harvest harv : harvest) {
 
@@ -145,8 +136,11 @@ public class ResourceService {
                 if (i > 0)
                     harvestMap += ",";
             }
+
             harvestMap += "]";
+
             Resource resource = harvest.get(0).getResource();
+
             String resourceName = resource.getName(),
                     contentPartnerId = String.valueOf(resource.getContentPartner().getId());
 
@@ -154,11 +148,10 @@ public class ResourceService {
             resourceHarvestHistory.put("contentPartnerId", contentPartnerId);
             resourceHarvestHistory.put("harvestHistory", harvestMap);
         }
-
         return resourceHarvestHistory;
     }
 
-    public String getLastHarvestStatus(Long resourceID) {
+    String getLastHarvestStatus(Long resourceID) {
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
         HashMap<String, String> lastHarvest = new HashMap();
         String lastHarvestStatus = "";
@@ -169,14 +162,20 @@ public class ResourceService {
         return lastHarvestStatus;
     }
 
+    public boolean checkReadyResources(Timestamp ts) {
+        StoredProcedureQuery getResourcesQuery =
+                entityManager.createNamedStoredProcedureQuery("getHarvestedResources_sp");
 
-    public HashMap<String, Long> getResourceBoundaries() {
-        List<Resource> resources = resourceRepository.findAll();
-        Long firstID = resources.get(0).getId(),
-                lastID = resources.get(resources.size() - 1).getId();
-        HashMap<String, Long> resourceLimitIDs = new HashMap<>();
-        resourceLimitIDs.put("firstResourceId", firstID);
-        resourceLimitIDs.put("lastResourceId", lastID);
-        return resourceLimitIDs;
+        StoredProcedureQuery storedProcedure =
+                getResourcesQuery.setParameter("cDate", ts);
+
+        BigInteger count = (BigInteger) storedProcedure.getSingleResult();
+        logger.debug("Number of Ready Resources: " + count.toString());
+        return (count.signum() == 1 ? true : false);
     }
+
+    public Long getResourceCount() {
+        return resourceRepository.count();
+    }
+
 }

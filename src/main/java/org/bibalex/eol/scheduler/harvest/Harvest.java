@@ -1,11 +1,9 @@
 package org.bibalex.eol.scheduler.harvest;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.bibalex.eol.scheduler.resource.Resource;
-
-import javax.persistence.*;
 import java.util.Date;
-
+import javax.persistence.*;
+import org.bibalex.eol.scheduler.resource.Resource;
 
 @Entity
 public class Harvest {
@@ -16,18 +14,23 @@ public class Harvest {
         running,
         pending
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private Date start_at;
+
     private Date validated_at;
+
     private Date deltas_created_at;
+
     private Date completed_at;
 
 
     @Enumerated(EnumType.STRING)
     private Harvest.State state;
+
     @ManyToOne
     @JoinColumn (name="resource_id")
     @JsonBackReference

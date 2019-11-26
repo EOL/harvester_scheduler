@@ -1,25 +1,29 @@
+/**
+ * Created by maha.mostafa on 6/2/2018.
+ */
+
 package org.bibalex.eol.scheduler.utils;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-
-/**
- * Created by maha.mostafa on 6/2/2018.
- */
 
 @Component
 @ConfigurationProperties
 public class PropertiesFile {
 
     private String harvestVar;
-    private String harvesterServiceUrl;
-    private String proxyUserName;
-    private String password;
-    private String proxyExists;
-    private String proxy;
-    private String port;
 
+    private String harvesterServiceUrl;
+
+    private String proxyUserName;
+
+    private String password;
+
+    private String proxyExists;
+
+    private String proxy;
+
+    private String port;
 
     public String getProxyUserName() {
         return proxyUserName;
@@ -76,4 +80,5 @@ public class PropertiesFile {
     public void setHarvesterServiceUrl(String harvesterServiceUrl) {
         this.harvesterServiceUrl = harvesterServiceUrl;
     }
+
 }

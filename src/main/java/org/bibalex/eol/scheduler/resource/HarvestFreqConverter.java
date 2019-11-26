@@ -5,9 +5,9 @@ import javax.persistence.Convert;
 
 import static org.bibalex.eol.scheduler.resource.Resource.HarvestFrequency.*;
 
-
 @Convert
 public class HarvestFreqConverter implements AttributeConverter<Resource.HarvestFrequency, String> {
+
     @Override
     public String convertToDatabaseColumn(Resource.HarvestFrequency harvestFrequency) {
         switch (harvestFrequency) {
@@ -43,4 +43,5 @@ public class HarvestFreqConverter implements AttributeConverter<Resource.Harvest
                 throw new IllegalArgumentException("Unknown " + dbData);
         }
     }
+
 }

@@ -1,18 +1,19 @@
+/**
+ * Created by hduser on 12/6/17.
+ */
+
 package org.bibalex.eol.scheduler.resource;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.bibalex.eol.scheduler.content_partner.ContentPartner;
-import org.bibalex.eol.scheduler.harvest.Harvest;
-import org.hibernate.validator.constraints.Range;
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.bibalex.eol.scheduler.content_partner.ContentPartner;
+import org.bibalex.eol.scheduler.harvest.Harvest;
+import org.hibernate.validator.constraints.Range;
 
-/**
- * Created by hduser on 12/6/17.
- */
 @Entity
 @Table(name = "Resource")
 @NamedStoredProcedureQueries({
@@ -36,10 +37,12 @@ import java.util.Set;
 })
 
 public class Resource {
+
     public enum Type {
         url,
         file
     }
+
     public enum HarvestFrequency{
         once,
         weekly,
@@ -47,65 +50,87 @@ public class Resource {
         bimonthly,
         quarterly
     }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
+
     @Column(name="origin_url")
     private String originUrl;
+
     @Column(name="uploaded_url")
     private String uploadedUrl;
+
     @Enumerated(EnumType.STRING)
     private Resource.Type type;
+
     private String path;
+
     @Column(name="last_harvested_at")
     private Date lastHarvestedAt;
+
     @Convert(converter = HarvestFreqConverter.class)
     @Column(name="harvest_frequency")
     private Resource.HarvestFrequency harvestFrequency;
+
     @Range(min = 0, max = 31)
     @Column(name="day_of_month")
     private int dayOfMonth=0;
+
     @Column(name="nodes_count")
     private int nodesCount;
+
     private int position = -1;
+
     @Column(name="is_paused")
     private boolean paused = false;
+
     @Column(name="is_harvest_inprogress")
     private boolean harvestInprogress = false;
+
     @Column(name="is_approved")
     private boolean approved = false;
+
     @Column(name="is_trusted")
     private boolean trusted = false;
+
     @Column(name="forced_internally")
     private boolean forcedInternally = false;
+
     @Column(name="is_autopublished")
     private boolean autopublished = false;
+
     @Column(name="is_forced")
     private boolean forced = false;
+
     @Column(name="dataset_license")
     private int datasetLicense = 47;
+
     @Column(name="dataset_rights_statement")
     private String datasetRightsStatement;
+
     @Column(name="dataset_rights_holder")
     private String datasetRightsHolder;
+
     @Column(name="default_license_string")
     private int defaultLicenseString;
+
     @Column(name="defaultRightsStatement")
     private String defaultRightsStatement;
+
     @Column(name="default_rights_holder")
     private String defaultRightsHolder;
+
     @Column(name="default_language_id")
     private int defaultLanguageId = 152;
-//    @Column(name="created_at")
-//    private Date createdAt;
-//    @Column(name="updated_at")
-//    private Date updatedAt;
 
     @ManyToOne
     @JoinColumn (name="content_partner_id")
     @JsonBackReference
     private ContentPartner contentPartner;
+
     @OneToMany(mappedBy ="resource")
     private Set<Harvest> harvests = new HashSet<>();
 
@@ -130,7 +155,6 @@ public class Resource {
     public void setName(String name) {
         this.name = name;
     }
-
 
     public String getOriginUrl() {
         return originUrl;
@@ -223,14 +247,6 @@ public class Resource {
     public int getDefaultLanguageId() {
         return defaultLanguageId;
     }
-
-//    public Date getCreatedAt() {
-//        return createdAt;
-//    }
-//
-//    public Date getUpdatedAt() {
-//        return updatedAt;
-//    }
 
     public ContentPartner getContentPartner() {
         return contentPartner;
@@ -332,14 +348,6 @@ public class Resource {
         this.defaultLanguageId = defaultLanguageId;
     }
 
-//    public void setCreatedAt(Date createdAt) {
-//        this.createdAt = createdAt;
-//    }
-//
-//    public void setUpdatedAt(Date updatedAt) {
-//        this.updatedAt = updatedAt;
-//    }
-
     public void setContentPartner(ContentPartner contentPartner) {
         this.contentPartner = contentPartner;
     }
@@ -347,4 +355,5 @@ public class Resource {
     public void setHarvests(Set<Harvest> harvests) {
         this.harvests = harvests;
     }
+
 }

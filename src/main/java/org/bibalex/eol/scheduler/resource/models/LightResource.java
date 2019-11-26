@@ -1,71 +1,62 @@
-package org.bibalex.eol.scheduler.resource.models;
-
-import org.bibalex.eol.scheduler.content_partner.ContentPartner;
-import org.bibalex.eol.scheduler.harvest.Harvest;
-import org.bibalex.eol.scheduler.resource.Resource;
-
-import java.util.Date;
-import java.util.Set;
-
 /**
  * Created by maha.mostafa on 2/25/18.
  */
+
+package org.bibalex.eol.scheduler.resource.models;
+
+import java.util.Date;
+import org.bibalex.eol.scheduler.resource.Resource;
+
 public interface LightResource {
 
-    public Long getId();
+    Long getId();
 
-    public String getName();
+    String getName();
 
+    String getOriginUrl();
 
-    public String getOriginUrl();
+    String getUploadedUrl();
 
-    public String getUploadedUrl();
+    Resource.Type getType();
 
-    public Resource.Type getType();
+    String getPath();
 
-    public String getPath();
+    Date getLastHarvestedAt();
 
-    public Date getLastHarvestedAt();
+    Resource.HarvestFrequency getHarvestFrequency();
 
-    public Resource.HarvestFrequency getHarvestFrequency();
+    int getDayOfMonth();
 
-    public int getDayOfMonth();
+    int getNodesCount();
 
-    public int getNodesCount();
+    int getPosition();
 
-    public int getPosition();
+    boolean isPaused();
 
-    public boolean isPaused();
+    boolean isHarvestInprogress();
 
-    public boolean isHarvestInprogress();
+    boolean isApproved();
 
-    public boolean isApproved();
+    boolean isTrusted();
 
-    public boolean isTrusted();
+    boolean isForcedInternally();
 
-    public boolean isForcedInternally();
+    boolean isAutopublished();
 
-    public boolean isAutopublished();
+    boolean isForced();
 
-    public boolean isForced();
+    int getDatasetLicense();
 
-    public int getDatasetLicense();
+    String getDatasetRightsStatement();
 
-    public String getDatasetRightsStatement();
+    String getDatasetRightsHolder();
 
-    public String getDatasetRightsHolder();
+    int getDefaultLicenseString();
 
-    public int getDefaultLicenseString();
+    String getDefaultRightsStatement();
 
-    public String getDefaultRightsStatement();
+    String getDefaultRightsHolder();
 
-    public String getDefaultRightsHolder();
-
-    public int getDefaultLanguageId();
-
-
-//    public static void main(String []args) {
-//        System.out.println(System.currentTimeMillis());
-//    }
+    int getDefaultLanguageId();
 
 }
