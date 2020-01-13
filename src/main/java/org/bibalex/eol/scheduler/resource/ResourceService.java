@@ -149,6 +149,7 @@ public class ResourceService {
             resourceMap.put("contentPartnerID", String.valueOf(res.getContentPartner().getId()));
             resourceMap.put("contentPartnerName", res.getContentPartner().getName());
             resourceMap.put("lastHarvestStatus", getLastHarvestStatus(res.getId()));
+            resourceMap.put("approved", String.valueOf(res.isApproved()));
 
             allResources.add(resourceMap);
         }
@@ -157,7 +158,6 @@ public class ResourceService {
 
     public String getLastHarvestStatus(Long resourceID) {
         List<Harvest> harvest = harvestRepository.findByResourceId(resourceID);
-        HashMap<String, String> lastHarvest = new HashMap();
         String lastHarvestStatus = "";
         if (!harvest.isEmpty()) {
             Harvest harv = harvest.get(harvest.size() - 1);
@@ -169,11 +169,88 @@ public class ResourceService {
     public HashMap<String, String> getLastHarvestLog(Long resourceID) {
         HashMap<String, String> lastHarvestLog = new HashMap<>();
         List<Harvest> fullHarvests = harvestRepository.findByResourceId(resourceID);
-        Harvest lastHarvest = fullHarvests.get(fullHarvests.size()-1);
+        Harvest lastHarvest = fullHarvests.get(fullHarvests.size() - 1);
         lastHarvestLog.put("startTime", String.valueOf(lastHarvest.getStart_at()));
         lastHarvestLog.put("endTime", String.valueOf(lastHarvest.getCompleted_at()));
         lastHarvestLog.put("status", String.valueOf(lastHarvest.getState()));
         return lastHarvestLog;
     }
 
+    public Boolean toggleApproval(Long resourceID) {
+        Resource resource = resourceRepository.findOne(resourceID);
+        resource.setApproved(!resource.isApproved());
+        resourceRepository.save(resource);
+        return resource.isApproved();
+    }
+
+    public Integer changePosition(Long resourceID, Integer direction, Integer newPosition) {
+        Resource resource = resourceRepository.findOne(resourceID);
+
+        Integer oldPosition = resource.getPosition();
+
+        switch(direction){
+            case 1:
+                List<Resource> inBetweenResourcesDownward = resourceRepository.findByPositionsDownward(oldPosition, newPosition, resourceID);
+                for(Resource r : inBetweenResourcesDownward) {
+                    r.setPosition(r.getPosition() - 1);
+                    resourceRepository.save(r);
+                }
+                resource.setPosition(newPosition + 1);
+                resourceRepository.save(resource);
+                break;
+            case -1:
+                List<Resource> inBetweenResourcesUpward = resourceRepository.findByPositionsUpward(oldPosition, newPosition, resourceID);
+                for(Resource r : inBetweenResourcesUpward) {
+                    r.setPosition(r.getPosition() + 1);
+                    resourceRepository.save(r);
+                }
+                resource.setPosition(newPosition - 1);
+                resourceRepository.save(resource);
+                break;
+        }
+        return resource.getPosition();
+    }
+
+    public Integer swapResources(Long firstResourceID, Long secondResourceID){
+        Resource firstResource = resourceRepository.findOne(firstResourceID),
+                secondResource = resourceRepository.findOne(secondResourceID);
+        int firstResourcePosition = firstResource.getPosition(),
+                secondResourcePosition = secondResource.getPosition();
+        firstResource.setPosition(secondResourcePosition);
+        resourceRepository.save(firstResource);
+        secondResource.setPosition(firstResourcePosition);
+        resourceRepository.save(secondResource);
+
+        return firstResourcePosition;
+    }
+
+    public Integer moveToEnd(Long resourceID, Long endResourceID, Integer direction) {
+        Resource resource = resourceRepository.findOne(resourceID),
+                endResource = resourceRepository.findOne(endResourceID);
+        Integer endResourcePosition = endResource.getPosition();
+        switch (direction) {
+            case -1:
+                List<Resource> resourcesToMoveUpwards = resourceRepository.findByPositionsDownward(resource.getPosition(),
+                        endResourcePosition, resourceID);
+                for(Resource r: resourcesToMoveUpwards){
+                    r.setPosition(r.getPosition() + 1);
+                    resourceRepository.save(r);
+                }
+                resource.setPosition(endResourcePosition - 1);
+                resourceRepository.save(resource);
+                break;
+
+            case 1:
+                List<Resource> resourcesToMoveDownwards = resourceRepository.findByPositionsDownward(endResourcePosition,
+                        resource.getPosition(), resourceID);
+                for(Resource r: resourcesToMoveDownwards){
+                    r.setPosition(r.getPosition() - 1);
+                    resourceRepository.save(r);
+                }
+                resource.setPosition(endResourcePosition + 1);
+                resourceRepository.save(resource);
+                break;
+        }
+        return resource.getPosition();
+    }
 }

@@ -17,13 +17,14 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     Optional<LightResource> findById(long id);
     Optional<List<LightResource>> findByIdIn(List<Long> ids);
     List<LightResource> findByContentPartnerId(long contentPartnerId, Pageable pageable);
+    Resource findTopByOrderByPositionDesc();
+    Resource findTopByOrderByPositionAsc();
 
-//    @Query("select r,p from Resource r INNER JOIN Resource ON r.content_partner_id=p.id where r.id= ?1" +
-//            @Query("SELECT r FROM ContentPartner p JOIN p.resources r where  r.id= ?1")
-//    public Optional<Resource> findByIdWithCP(long id);
+    @Query(value = "SELECT * FROM resource WHERE position >= ?1 AND position <= ?2 AND id != ?3",
+            nativeQuery = true)
+    List<Resource> findByPositionsDownward(int initialPosition, int finalPosition, long resourceID);
 
-
-//    @Query(value = "select r.id from Resource r")
-////    List<Resource> findAllResourceIDs();
-//    ArrayList<Long> findAllResourceIDs();
+    @Query(value = "SELECT * FROM resource WHERE position <= ?1 AND position >= ?2 AND id != ?3",
+            nativeQuery = true)
+    List<Resource> findByPositionsUpward(int initialPosition, int finalPosition, long resourceID);
 }

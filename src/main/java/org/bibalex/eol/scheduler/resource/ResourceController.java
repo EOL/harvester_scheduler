@@ -126,5 +126,34 @@ public class ResourceController {
             logger.debug("Last Harvest Log: " + responseEntity);
             return responseEntity;
         }
+
+    @RequestMapping(method = RequestMethod.GET, value = "resources/{id}/toggleApproval")
+    public ResponseEntity<Boolean> toggleApproval(@PathVariable("id") Long resourceID) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.toggleApproval(resourceID));
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "resources/{id}/changePosition/{direction}/{newPosition}")
+    public ResponseEntity<Integer> changePosition(@PathVariable("id") Long resourceID,
+                                                  @PathVariable("direction") Integer direction,
+                                                  @PathVariable("newPosition") Integer displacement) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.changePosition(resourceID, direction, displacement));
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "resources/swap/{firstResourceID}/{secondResourceID}")
+    public ResponseEntity<Integer> swap(@PathVariable("firstResourceID") Long firstResourceID,
+                                        @PathVariable("secondResourceID") Long secondResourceID) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.swapResources(firstResourceID, secondResourceID));
+        return responseEntity;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "resources/moveToEnd/{id}/{endID}/{direction}")
+    public ResponseEntity<Integer> moveToEnd(@PathVariable("id") Long resourceID,
+                                             @PathVariable("endID") Long endResourceID,
+                                             @PathVariable("direction") Integer direction) {
+        ResponseEntity responseEntity = ResponseEntity.ok(resourceService.moveToEnd(resourceID, endResourceID, direction));
+        return responseEntity;
+    }
 }
 

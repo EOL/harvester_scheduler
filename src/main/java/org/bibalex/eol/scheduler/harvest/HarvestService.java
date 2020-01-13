@@ -5,11 +5,13 @@ import org.bibalex.eol.scheduler.utils.PropertiesFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.persistence.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.PriorityQueue;
 import java.util.concurrent.Executors;
@@ -122,22 +124,74 @@ public class HarvestService {
 
 
     @PreDestroy
-    private void destroy(){
+    private void destroy() {
         try {
             executor.shutdown();
             executor.awaitTermination(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.error("InterruptedException: Executor Tasks Interrupted");
-        }
-        finally {
+        } finally {
             if (!executor.isTerminated()) {
                 logger.error("Cancel Unfinished Executor Tasks");
             }
             executor.shutdownNow();
             logger.error("Executor Shutdown Finished");
         }
-
     }
 
+    public List<HashMap<String, String>> getHarvests(int state, int offset, int limit) {
+        List<HashMap<String, String>> harvestingList = new ArrayList<>();
+        Page<Harvest> harvests = null;
+        Pageable pageable = new PageRequest(offset, limit);
+        switch (state){
+            case 1:
+                harvests = harvestRepository.findByState(Harvest.State.running, pageable);
+                break;
+            case 2:
+                List<HashMap<String, String>> pendingHarvests = getPendingHarvests();
+                return pendingHarvests;
+            case 3:
+                harvests = harvestRepository.findAll(pageable);
+                break;
+        }
+
+        for(Harvest harvest : harvests) {
+            HashMap<String, String> harvestMap = new HashMap();
+
+            harvestMap.put("harvestID", String.valueOf(harvest.getId()));
+            harvestMap.put("resourceID", String.valueOf(harvest.getResource().getId()));
+            harvestMap.put("resourceName", harvest.getResource().getName());
+            harvestMap.put("contentPartnerID", String.valueOf(harvest.getResource().getContentPartner().getId()));
+            harvestMap.put("contentPartnerName", harvest.getResource().getContentPartner().getName());
+            harvestMap.put("startTime", String.valueOf(harvest.getStart_at()));
+            harvestMap.put("endTime", String.valueOf(harvest.getCompleted_at()));
+            harvestMap.put("status", String.valueOf(harvest.getState()));
+
+            harvestingList.add(harvestMap);
+        }
+
+        return harvestingList;
+    }
+
+    public List<HashMap<String, String>> getPendingHarvests() {
+        List<HashMap<String, String>> harvestingList = new ArrayList<>();
+        List<Harvest> harvests = harvestRepository.findByState();
+
+        for(Harvest harvest : harvests) {
+            HashMap<String, String> harvestMap = new HashMap();
+
+            harvestMap.put("harvestID", String.valueOf(harvest.getId()));
+            harvestMap.put("resourceID", String.valueOf(harvest.getResource().getId()));
+            harvestMap.put("resourceName", harvest.getResource().getName());
+            harvestMap.put("contentPartnerID", String.valueOf(harvest.getResource().getContentPartner().getId()));
+            harvestMap.put("contentPartnerName", harvest.getResource().getContentPartner().getName());
+            harvestMap.put("startTime", String.valueOf(harvest.getStart_at()));
+            harvestMap.put("status", String.valueOf(harvest.getState()));
+            harvestMap.put("resourcePosition", String.valueOf(harvest.getResource().getPosition()));
+
+            harvestingList.add(harvestMap);
+        }
+
+        return harvestingList;
+    }
 }
