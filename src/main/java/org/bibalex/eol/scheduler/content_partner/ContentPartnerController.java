@@ -135,5 +135,11 @@ public class ContentPartnerController {
         return () -> responseEntity;
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "getContentPartnerWithoutResources/{id}")
+    public Callable<ResponseEntity<Long>> getContentPartnerWithoutResources(@PathVariable long id) {
+        ResponseEntity responseEntity = ResponseEntity.ok(contentPartnerService.getContentPartnerWithoutResources(id));
+        logger.info("Response: " + responseEntity);
+        return () -> responseEntity;
+    }
 }
 

@@ -120,9 +120,11 @@ public class ContentPartnerService {
             HashMap<String, String> contentPartnersMap = new HashMap();
             contentPartnersMap.put("contentPartnerID", String.valueOf(contentPartner.getId()));
             contentPartnersMap.put("contentPartnerName", contentPartner.getName());
+            contentPartnersMap.put("logoType", contentPartner.getLogoType());
+            contentPartnersMap.put("logoPath", contentPartner.getLogoPath());
             contentPartners.add(contentPartnersMap);
+//            System.out.println(contentPartner.getLogoPath());
         }
-
         return contentPartners;
     }
 
@@ -158,5 +160,20 @@ public class ContentPartnerService {
         fullContentPartner.put("resources", cpResources);
 
         return fullContentPartner;
+    }
+
+    public HashMap<String, Object> getContentPartnerWithoutResources(long id) {
+
+        LightContentPartner lightContentPartner = contentPartnerRepository.findContentPartnerById(id);
+        HashMap<String, Object> contentPartner = new HashMap<>();
+        contentPartner.put("id", lightContentPartner.getId());
+        contentPartner.put("name", lightContentPartner.getName());
+//        contentPartner.put("abbreviation", lightContentPartner.getAbbreviation());
+//        contentPartner.put("url", lightContentPartner.getUrl());
+//        contentPartner.put("description", lightContentPartner.getDescription());
+        contentPartner.put("logoType", lightContentPartner.getLogoType());
+        contentPartner.put("logoPath", lightContentPartner.getLogoPath());
+
+        return contentPartner;
     }
 }
